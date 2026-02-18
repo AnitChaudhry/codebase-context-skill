@@ -1,10 +1,10 @@
 {
   "name": "codebase-context-skill",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Context engineering middleware for Claude Code — intelligent codebase indexing, token-efficient file selection, local tracking, testing, auditing, and session persistence via MD files.",
   "bin": {
-    "codebase-context-skill": "./bin/cli.js",
-    "ccs": "./bin/cli.js"
+    "codebase-context-skill": "bin/cli.js",
+    "ccs": "bin/cli.js"
   },
   "files": [
     "bin/",

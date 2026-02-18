@@ -1,6 +1,9 @@
 # Context files (generated per-project)
 .ccs/
 
+# Site (hosted separately in private repo)
+site/
+
 # Node
 node_modules/
 dist/

@@ -7,41 +7,41 @@ Context engineering middleware for Claude Code. Builds intelligent, token-effici
 ### Context Management
 | Command | Purpose |
 |---------|---------|
-| `/ccs:init` | Deep-research the codebase, generate project-map, architecture, file-index, conventions |
-| `/ccs:status` | Show what's indexed, staleness, file counts, token savings |
-| `/ccs:refresh` | Rebuild index (full, incremental, or session-based per user preference) |
-| `/ccs:query` | Preview which files would be selected for a given query |
+| `/ccs-init` | Deep-research the codebase, generate project-map, architecture, file-index, conventions |
+| `/ccs-status` | Show what's indexed, staleness, file counts, token savings |
+| `/ccs-refresh` | Rebuild index (full, incremental, or session-based per user preference) |
+| `/ccs-query` | Preview which files would be selected for a given query |
 
 ### Workflow
 | Command | Purpose |
 |---------|---------|
-| `/ccs:plan` | Plan a task with full dependency-aware context |
-| `/ccs:build` | Create/implement with tracked context and commit-style logging |
-| `/ccs:refactor` | Scope a refactor — identify all affected files and dependencies |
-| `/ccs:fix` | Fix bugs with dependency tracking, root-cause analysis, and verification |
+| `/ccs-plan` | Plan a task with full dependency-aware context |
+| `/ccs-build` | Create/implement with tracked context and commit-style logging |
+| `/ccs-refactor` | Scope a refactor — identify all affected files and dependencies |
+| `/ccs-fix` | Fix bugs with dependency tracking, root-cause analysis, and verification |
 
 ### Testing & Quality
 | Command | Purpose |
 |---------|---------|
-| `/ccs:test` | Run tests, track results, suggest fixes, auto-fix failing tests |
-| `/ccs:audit` | Audit code for security, performance, patterns, accessibility, dead code |
-| `/ccs:review` | Code review with context — style, logic, security, performance checks |
+| `/ccs-test` | Run tests, track results, suggest fixes, auto-fix failing tests |
+| `/ccs-audit` | Audit code for security, performance, patterns, accessibility, dead code |
+| `/ccs-review` | Code review with context — style, logic, security, performance checks |
 
 ### Research & Docs
 | Command | Purpose |
 |---------|---------|
-| `/ccs:research` | Search official docs, resolve errors, check dependency health, find best practices |
+| `/ccs-research` | Search official docs, resolve errors, check dependency health, find best practices |
 
 ### Setup
 | Command | Purpose |
 |---------|---------|
-| `/ccs:connect` | Set up MCP server — creates/updates .mcp.json, configures remote tools endpoint, verifies connection |
+| `/ccs-connect` | Set up MCP server — creates/updates .mcp.json, configures remote tools endpoint, verifies connection |
 
 ### Operations
 | Command | Purpose |
 |---------|---------|
-| `/ccs:deploy` | Pre-deployment checklist — tests, build, env vars, dependencies, breaking changes |
-| `/ccs:track` | View/manage session task log, see all changes made this session |
+| `/ccs-deploy` | Pre-deployment checklist — tests, build, env vars, dependencies, breaking changes |
+| `/ccs-track` | View/manage session task log, see all changes made this session |
 
 ## Model Strategy
 - **Haiku 4.5**: File scanning, index lookup, status checks, query preview, session tracking

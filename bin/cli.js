@@ -95,36 +95,77 @@ function footer() {
   log('');
 }
 
+function installSkill(skillDir, skillsDest, sharedDir) {
+  const skillName = path.basename(skillDir);
+  const destName = 'ccs-' + skillName;
+  const destDir = path.join(skillsDest, destName);
+
+  if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
+
+  // Copy SKILL.md with updated name field
+  const skillMd = fs.readFileSync(path.join(skillDir, 'SKILL.md'), 'utf8');
+  const updated = skillMd
+    .replace(/^name:\s*.+$/m, 'name: ' + destName)
+    .replace(/\/ccs:/g, '/ccs-');
+  fs.writeFileSync(path.join(destDir, 'SKILL.md'), updated);
+
+  // Copy any other files in the skill directory
+  const entries = fs.readdirSync(skillDir, { withFileTypes: true });
+  for (const entry of entries) {
+    if (entry.name === 'SKILL.md') continue;
+    const srcPath = path.join(skillDir, entry.name);
+    const destPath = path.join(destDir, entry.name);
+    if (entry.isDirectory()) {
+      copyDirRecursive(srcPath, destPath);
+    } else {
+      fs.copyFileSync(srcPath, destPath);
+    }
+  }
+}
+
 function init() {
   header();
   blank();
 
-  // 1. Copy skills
+  // 1. Copy each skill directly into .claude/skills/ccs-<name>/
+  //    Claude Code discovers skills at .claude/skills/<name>/SKILL.md (one level deep)
   const skillsSrc = path.join(PKG_DIR, 'skills');
-  const skillsDest = path.join(CWD, '.claude', 'skills', 'ccs');
+  const skillsDest = path.join(CWD, '.claude', 'skills');
+  const sharedDir = path.join(skillsDest, '_ccs');
 
-  if (fs.existsSync(skillsDest)) {
-    warn('Existing install found \u2014 overwriting');
+  // Check for old nested install and warn
+  const oldInstall = path.join(skillsDest, 'ccs');
+  if (fs.existsSync(oldInstall)) {
+    warn(`Removing old nested install at .claude/skills/ccs/`);
+    fs.rmSync(oldInstall, { recursive: true, force: true });
   }
 
-  copyDirRecursive(skillsSrc, skillsDest);
-  success(`${B}15 slash commands${R} installed`);
+  if (!fs.existsSync(skillsDest)) fs.mkdirSync(skillsDest, { recursive: true });
 
-  // 2. Copy agents
+  const skillDirs = fs.readdirSync(skillsSrc, { withFileTypes: true })
+    .filter(e => e.isDirectory());
+
+  for (const dir of skillDirs) {
+    installSkill(path.join(skillsSrc, dir.name), skillsDest, sharedDir);
+  }
+  success(`${B}${skillDirs.length} slash commands${R} installed to .claude/skills/`);
+
+  // 2. Copy agents, templates, references into shared _ccs directory
+  //    (underscore prefix = not a skill, just shared resources)
+  if (!fs.existsSync(sharedDir)) fs.mkdirSync(sharedDir, { recursive: true });
+
   const agentsSrc = path.join(PKG_DIR, 'agents');
-  const agentsDest = path.join(CWD, '.claude', 'skills', 'ccs', 'agents');
+  const agentsDest = path.join(sharedDir, 'agents');
   copyDirRecursive(agentsSrc, agentsDest);
   success(`${B}3 agents${R} installed`);
 
-  // 3. Copy templates
   const templatesSrc = path.join(PKG_DIR, 'templates');
-  const templatesDest = path.join(CWD, '.claude', 'skills', 'ccs', 'templates');
+  const templatesDest = path.join(sharedDir, 'templates');
   copyDirRecursive(templatesSrc, templatesDest);
   success(`${B}5 templates${R} installed`);
 
-  // 4. Copy references
   const refsSrc = path.join(PKG_DIR, 'references');
-  const refsDest = path.join(CWD, '.claude', 'skills', 'ccs', 'references');
+  const refsDest = path.join(sharedDir, 'references');
   copyDirRecursive(refsSrc, refsDest);
   success(`${B}4 reference docs${R} installed`);
 
@@ -154,12 +195,12 @@ function init() {
   blank();
   log(`  ${GRAY}\u2502${R}   ${GRN}${B}Ready.${R} Open Claude Code and run:`);
   blank();
-  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs:init${R}    ${D}Index your codebase${R}`);
-  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs:plan${R}    ${D}Plan a task${R}`);
-  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs:build${R}   ${D}Build with context${R}`);
-  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs:test${R}    ${D}Run & fix tests${R}`);
-  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs:audit${R}   ${D}Security & quality audit${R}`);
-  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs:fix${R}     ${D}Debug with root-cause analysis${R}`);
+  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-init${R}    ${D}Index your codebase${R}`);
+  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-plan${R}    ${D}Plan a task${R}`);
+  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-build${R}   ${D}Build with context${R}`);
+  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-test${R}    ${D}Run & fix tests${R}`);
+  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-audit${R}   ${D}Security & quality audit${R}`);
+  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-fix${R}     ${D}Debug with root-cause analysis${R}`);
   blank();
   bar(`Docs     ${R}${TEAL}https://contextcode.thinqmesh.com${R}`);
   bar(`GitHub   ${R}${PURPLE}https://github.com/AnitChaudhry/codebase-context-skill${R}`);
@@ -178,13 +219,13 @@ function showHelp() {
   blank();
   log(`  ${GRAY}\u2502${R}   ${WHT}${B}What it does:${R}`);
   blank();
-  log(`  ${GRAY}\u2502${R}      Copies ${B}15 slash commands${R}, ${B}3 agents${R}, ${B}5 templates${R}, and`);
-  log(`  ${GRAY}\u2502${R}      ${B}4 reference docs${R} into ${CYN}.claude/skills/ccs/${R}`);
+  log(`  ${GRAY}\u2502${R}      Copies ${B}15 slash commands${R} to ${CYN}.claude/skills/ccs-*/${R}`);
+  log(`  ${GRAY}\u2502${R}      Copies ${B}agents, templates, refs${R} to ${CYN}.claude/skills/_ccs/${R}`);
   log(`  ${GRAY}\u2502${R}      Configures MCP server in ${CYN}.mcp.json${R}`);
   blank();
   log(`  ${GRAY}\u2502${R}   ${WHT}${B}After install:${R}`);
   blank();
-  log(`  ${GRAY}\u2502${R}      Run ${CYN}${B}/ccs:init${R} in Claude Code to index your codebase.`);
+  log(`  ${GRAY}\u2502${R}      Run ${CYN}${B}/ccs-init${R} in Claude Code to index your codebase.`);
   blank();
   bar(`Docs     ${R}${TEAL}https://contextcode.thinqmesh.com${R}`);
   bar(`GitHub   ${R}${PURPLE}https://github.com/AnitChaudhry/codebase-context-skill${R}`);

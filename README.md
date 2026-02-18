@@ -31,55 +31,67 @@ ccs init
 ### Manual
 ```bash
 git clone https://github.com/AnitChaudhry/codebase-context-skill.git
-cp -r codebase-context-skill/skills/ .claude/skills/ccs/
+# Copy each skill as its own directory (Claude Code requires one level deep)
+for d in codebase-context-skill/skills/*/; do
+  name=$(basename "$d")
+  cp -r "$d" ".claude/skills/ccs-$name/"
+done
+# Copy shared resources
+cp -r codebase-context-skill/{agents,templates,references} .claude/skills/_ccs/
+# Copy MCP config
 cp codebase-context-skill/.mcp.json .mcp.json
 ```
-This copies the skills AND the MCP server config into your project. If you already have a `.mcp.json`, merge the `ccs` entry manually (see [MCP Server Connection](#mcp-server-connection) below).
+**Important:** Skills must be at `.claude/skills/<name>/SKILL.md` (one level deep). Do NOT copy into `.claude/skills/ccs/skills/` — Claude Code won't discover nested skills.
+
+If you already have a `.mcp.json`, merge the `ccs` entry manually (see [MCP Server Connection](#mcp-server-connection) below).
 
 ## Slash Commands
+
+> **Naming:** When installed via npx/CLI, commands use hyphens: `/ccs-init`, `/ccs-build`, etc.
+> When installed as a Claude Code plugin (git clone with `.claude-plugin/`), the plugin namespace adds the prefix automatically: `/ccs-init`, `/ccs-build`, etc.
 
 ### Context Management
 | Command | Description |
 |---------|-------------|
-| `/ccs:init` | Deep-research the codebase, generate project-map, architecture, file-index, conventions |
-| `/ccs:status` | Show what's indexed, staleness, file counts, token savings estimate |
-| `/ccs:refresh` | Rebuild index (full, incremental, or session-based) |
-| `/ccs:query [question]` | Preview which files would be selected for a given query |
+| `/ccs-init` | Deep-research the codebase, generate project-map, architecture, file-index, conventions |
+| `/ccs-status` | Show what's indexed, staleness, file counts, token savings estimate |
+| `/ccs-refresh` | Rebuild index (full, incremental, or session-based) |
+| `/ccs-query [question]` | Preview which files would be selected for a given query |
 
 ### Workflow
 | Command | Description |
 |---------|-------------|
-| `/ccs:plan [task]` | Plan a task with full dependency-aware context |
-| `/ccs:build [task]` | Create/implement with tracked context and commit-style logging |
-| `/ccs:refactor [scope]` | Scope a refactor — identify all affected files and dependencies |
-| `/ccs:fix [issue]` | Fix bugs with dependency tracking, root-cause analysis, and verification |
+| `/ccs-plan [task]` | Plan a task with full dependency-aware context |
+| `/ccs-build [task]` | Create/implement with tracked context and commit-style logging |
+| `/ccs-refactor [scope]` | Scope a refactor — identify all affected files and dependencies |
+| `/ccs-fix [issue]` | Fix bugs with dependency tracking, root-cause analysis, and verification |
 
 ### Testing & Quality
 | Command | Description |
 |---------|-------------|
-| `/ccs:test [scope]` | Run tests, track results locally, suggest and auto-fix failures |
-| `/ccs:audit [scope]` | Audit code for security, performance, patterns, accessibility, dead code |
-| `/ccs:review [scope]` | Code review with full context — style, logic, security, performance |
+| `/ccs-test [scope]` | Run tests, track results locally, suggest and auto-fix failures |
+| `/ccs-audit [scope]` | Audit code for security, performance, patterns, accessibility, dead code |
+| `/ccs-review [scope]` | Code review with full context — style, logic, security, performance |
 
 ### Research & Docs
 | Command | Description |
 |---------|-------------|
-| `/ccs:research [query]` | Search official docs, resolve errors, check deps, find best practices |
+| `/ccs-research [query]` | Search official docs, resolve errors, check deps, find best practices |
 
 ### Setup
 | Command | Description |
 |---------|-------------|
-| `/ccs:connect` | Set up MCP server — creates/updates .mcp.json, configures endpoint, verifies connection |
+| `/ccs-connect` | Set up MCP server — creates/updates .mcp.json, configures endpoint, verifies connection |
 
 ### Operations
 | Command | Description |
 |---------|-------------|
-| `/ccs:deploy` | Pre-deployment checklist — tests, build, env vars, dependencies, breaking changes |
-| `/ccs:track` | View/manage session task log, see all changes made this session |
+| `/ccs-deploy` | Pre-deployment checklist — tests, build, env vars, dependencies, breaking changes |
+| `/ccs-track` | View/manage session task log, see all changes made this session |
 
 ## MCP Server Connection
 
-The plugin ships with a `.mcp.json` that configures the CCS remote MCP server automatically. When you install (via npx, manual clone, or `/ccs:init`), this config is created in your project root:
+The plugin ships with a `.mcp.json` that configures the CCS remote MCP server automatically. When you install (via npx, manual clone, or `/ccs-init`), this config is created in your project root:
 
 ```json
 {
@@ -94,11 +106,11 @@ The plugin ships with a `.mcp.json` that configures the CCS remote MCP server au
 
 **What this gives you:** 6 MCP tools available to Claude Code — skill info, all 15 command docs, OS-specific install commands, model strategy, and context file details.
 
-**If you already have a `.mcp.json`** with other MCP servers, run `/ccs:connect` — it merges the CCS entry safely without overwriting your existing servers.
+**If you already have a `.mcp.json`** with other MCP servers, run `/ccs-connect` — it merges the CCS entry safely without overwriting your existing servers.
 
 **To reconfigure or verify**, run:
 ```bash
-/ccs:connect
+/ccs-connect
 ```
 
 **Alternative (global config):**
@@ -110,7 +122,7 @@ claude mcp add --transport http ccs https://contextcode.thinqmesh.com/api/mcp
 
 ## How It Works
 
-### 1. Initialization (`/ccs:init`)
+### 1. Initialization (`/ccs-init`)
 Scans your entire codebase and generates local reference files in `.ccs/`:
 - **project-map.md** — File tree + dependency graph (imports/exports/references)
 - **architecture.md** — Tech stack, patterns, entry points, data flow
@@ -154,7 +166,7 @@ All context files are stored in `.ccs/` (add to `.gitignore`):
 ## Index Refresh Modes
 
 Set your preference on first init (saved in `.ccs/preferences.json`):
-- **On-demand** — Run `/ccs:refresh` manually
+- **On-demand** — Run `/ccs-refresh` manually
 - **Incremental** — Auto-detect changed files, re-index only those
 - **Session-based** — Fresh index at the start of each session
 

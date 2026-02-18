@@ -1,0 +1,15 @@
+# Context files (generated per-project)
+.ccs/
+
+# Node
+node_modules/
+dist/
+build/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

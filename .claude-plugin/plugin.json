@@ -1,0 +1,22 @@
+{
+  "name": "codebase-context-skill",
+  "description": "Context engineering middleware for Claude Code — intelligent codebase indexing, token-efficient file selection, local tracking, testing, auditing, and session persistence via MD files.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Anit Chaudhary",
+    "email": "anitc98@gmail.com",
+    "url": "https://github.com/anitc98"
+  },
+  "repository": "https://github.com/anitc98/codebase-context-skill",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "context-engineering",
+    "codebase-indexing",
+    "token-optimization",
+    "agent-skill",
+    "testing",
+    "auditing",
+    "code-review"
+  ]
+}

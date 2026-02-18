@@ -41,7 +41,7 @@ Standards for validating the quality of generated context files (.ccs/ directory
 | 5/5 | Verified | All checkpoints pass |
 | 4/5 | Good | Minor gaps, still usable |
 | 3/5 | Draft | Needs improvement before relying on it |
-| <3 | Incomplete | Re-run /ccs:init |
+| <3 | Incomplete | Re-run /ccs-init |
 
 ## Task Entry Quality
 

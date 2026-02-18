@@ -21,10 +21,10 @@ The CCS MCP server exposes 6 tools that provide codebase-context-skill informati
 
 ## Setup Methods
 
-### Method 1: /ccs:connect (Recommended)
+### Method 1: /ccs-connect (Recommended)
 Run inside Claude Code after installing the skill:
 ```
-/ccs:connect
+/ccs-connect
 ```
 This automatically creates or updates `.mcp.json` in your project root.
 
@@ -71,7 +71,7 @@ This requires Node.js and runs a local WebSocket bridge.
 
 ## Merging With Existing Config
 
-If you already have `.mcp.json` with other MCP servers, `/ccs:connect` will merge — never overwrite. Example:
+If you already have `.mcp.json` with other MCP servers, `/ccs-connect` will merge — never overwrite. Example:
 
 **Before:**
 ```json
@@ -83,7 +83,7 @@ If you already have `.mcp.json` with other MCP servers, `/ccs:connect` will merg
 }
 ```
 
-**After /ccs:connect:**
+**After /ccs-connect:**
 ```json
 {
   "mcpServers": {
@@ -125,10 +125,10 @@ claude mcp get ccs     # Check CCS server details
 
 | Issue | Solution |
 |-------|---------|
-| "Server not found" | Run `/ccs:connect` or `claude mcp add --transport http ccs https://contextcode.thinqmesh.com/api/mcp` |
+| "Server not found" | Run `/ccs-connect` or `claude mcp add --transport http ccs https://contextcode.thinqmesh.com/api/mcp` |
 | "Connection refused" | Check internet connectivity, verify URL |
 | Tools not showing | Restart Claude Code session after adding MCP config |
-| Conflict with existing config | `/ccs:connect` merges safely — check `.mcp.json` for duplicate entries |
+| Conflict with existing config | `/ccs-connect` merges safely — check `.mcp.json` for duplicate entries |
 | Local WebMCP not connecting | Ensure Node.js is installed, run `npx @jason.today/webmcp@latest --new` to generate a token first |
 
 ## Security

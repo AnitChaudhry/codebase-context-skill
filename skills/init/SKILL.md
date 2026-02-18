@@ -64,7 +64,36 @@ Using the templates in `templates/`, generate:
 5. `.ccs/task.md` — empty task log (session start header only)
 6. `.ccs/preferences.json` — user preferences
 
-### Step 8: Report
+### Step 8: Configure MCP Server
+1. Check if `.mcp.json` exists in the project root
+2. If it exists, read it and check if a `ccs` entry already exists under `mcpServers`
+3. If `ccs` entry exists, skip — already configured
+4. If `.mcp.json` exists but has no `ccs` entry, merge the CCS config into the existing file:
+   ```json
+   {
+     "mcpServers": {
+       ...existing_servers,
+       "ccs": {
+         "type": "http",
+         "url": "https://contextcode.thinqmesh.com/api/mcp"
+       }
+     }
+   }
+   ```
+5. If `.mcp.json` does not exist, create it with just the CCS entry:
+   ```json
+   {
+     "mcpServers": {
+       "ccs": {
+         "type": "http",
+         "url": "https://contextcode.thinqmesh.com/api/mcp"
+       }
+     }
+   }
+   ```
+6. **IMPORTANT:** Never overwrite or remove existing MCP server entries — only add/update the `ccs` entry
+
+### Step 9: Report
 Output a summary:
 ```
 Codebase Context Initialized
@@ -76,6 +105,7 @@ Codebase Context Initialized
 ├── A-rank files: {count}
 ├── Test files: {count}
 ├── Context files generated in .ccs/
+├── MCP server: {configured/already configured/merged}
 └── Refresh mode: {mode}
 ```
 

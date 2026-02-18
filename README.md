@@ -29,7 +29,12 @@ ccs init
 ```
 
 ### Manual
-Copy the `skills/` directory into your project's `.claude/skills/` directory.
+```bash
+git clone https://github.com/AnitChaudhry/codebase-context-skill.git
+cp -r codebase-context-skill/skills/ .claude/skills/ccs/
+cp codebase-context-skill/.mcp.json .mcp.json
+```
+This copies the skills AND the MCP server config into your project. If you already have a `.mcp.json`, merge the `ccs` entry manually (see [MCP Server Connection](#mcp-server-connection) below).
 
 ## Slash Commands
 
@@ -74,7 +79,7 @@ Copy the `skills/` directory into your project's `.claude/skills/` directory.
 
 ## MCP Server Connection
 
-After installing, run `/ccs:connect` to set up the MCP tools endpoint. This creates or updates `.mcp.json` in your project root:
+The plugin ships with a `.mcp.json` that configures the CCS remote MCP server automatically. When you install (via npx, manual clone, or `/ccs:init`), this config is created in your project root:
 
 ```json
 {
@@ -87,12 +92,21 @@ After installing, run `/ccs:connect` to set up the MCP tools endpoint. This crea
 }
 ```
 
-Or use the CLI one-liner:
+**What this gives you:** 6 MCP tools available to Claude Code — skill info, all 15 command docs, OS-specific install commands, model strategy, and context file details.
+
+**If you already have a `.mcp.json`** with other MCP servers, run `/ccs:connect` — it merges the CCS entry safely without overwriting your existing servers.
+
+**To reconfigure or verify**, run:
+```bash
+/ccs:connect
+```
+
+**Alternative (global config):**
 ```bash
 claude mcp add --transport http ccs https://contextcode.thinqmesh.com/api/mcp
 ```
 
-This gives Claude Code access to 6 tools: skill info, command docs, install commands, model strategy, and context file details. If you already have `.mcp.json` with other servers, `/ccs:connect` merges safely without overwriting.
+> **Note:** All MCP config lives in the plugin's `.mcp.json` at your project root. To modify the endpoint or switch between remote/local, edit this file directly — do not modify `~/.claude/settings.json` for project-level config.
 
 ## How It Works
 

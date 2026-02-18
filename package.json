@@ -1,6 +1,6 @@
 {
   "name": "codebase-context-skill",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Context engineering middleware for Claude Code — intelligent codebase indexing, token-efficient file selection, local tracking, testing, auditing, and session persistence via MD files.",
   "bin": {
     "codebase-context-skill": "bin/cli.js",
@@ -37,7 +37,7 @@
     "type": "git",
     "url": "git+https://github.com/AnitChaudhry/codebase-context-skill.git"
   },
-  "homepage": "https://contextcode.thinqmesh.com",
+  "homepage": "https://skills.thinqmesh.com",
   "bugs": {
     "url": "https://github.com/AnitChaudhry/codebase-context-skill/issues"
   },

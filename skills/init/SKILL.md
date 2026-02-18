@@ -56,7 +56,7 @@ Using templates at `.claude/skills/_ccs/templates/`:
 2. If `ccs` entry already exists under `mcpServers` → skip
 3. If `.mcp.json` exists but no `ccs` entry → merge into existing:
    ```json
-   { "mcpServers": { ...existing, "ccs": { "type": "http", "url": "https://contextcode.thinqmesh.com/api/mcp" } } }
+   { "mcpServers": { ...existing, "ccs": { "type": "http", "url": "https://skills.thinqmesh.com/api/mcp" } } }
    ```
 4. If `.mcp.json` missing → create with just the `ccs` entry
 5. **NEVER overwrite or remove existing MCP server entries**

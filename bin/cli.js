@@ -87,7 +87,7 @@ function header() {
   log(`  ${GRAY}\u2502${R}   ${PURPLE}${B}\u2588\u2588\u2588${R} ${PINK}${B}\u2588\u2588\u2588${R}                                           ${GRAY}\u2502${R}`);
   log(`  ${GRAY}\u2502${R}                                                          ${GRAY}\u2502${R}`);
   log(`  ${GRAY}\u2502${R}   ${TEAL}Thinqmesh Technologies${R}                                ${GRAY}\u2502${R}`);
-  log(`  ${GRAY}\u2502${R}   ${GRAY}contextcode.thinqmesh.com${R}                              ${GRAY}\u2502${R}`);
+  log(`  ${GRAY}\u2502${R}   ${GRAY}skills.thinqmesh.com${R}                              ${GRAY}\u2502${R}`);
   log(`  ${GRAY}\u2502${R}                                                          ${GRAY}\u2502${R}`);
   log(`  ${GRAY}\u251C${''.padEnd(58, '\u2500')}\u2524${R}`);
 }
@@ -240,7 +240,7 @@ function init() {
   log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-pr${R}       ${D}Prepare PR with blast radius${R}`);
   log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-merge${R}    ${D}Merge with dependency checking${R}`);
   blank();
-  bar(`Docs     ${R}${TEAL}https://contextcode.thinqmesh.com${R}`);
+  bar(`Docs     ${R}${TEAL}https://skills.thinqmesh.com${R}`);
   bar(`GitHub   ${R}${PURPLE}https://github.com/AnitChaudhry/codebase-context-skill${R}`);
 
   footer();
@@ -265,7 +265,7 @@ function showHelp() {
   blank();
   log(`  ${GRAY}\u2502${R}      Run ${CYN}${B}/ccs-init${R} in Claude Code to index your codebase.`);
   blank();
-  bar(`Docs     ${R}${TEAL}https://contextcode.thinqmesh.com${R}`);
+  bar(`Docs     ${R}${TEAL}https://skills.thinqmesh.com${R}`);
   bar(`GitHub   ${R}${PURPLE}https://github.com/AnitChaudhry/codebase-context-skill${R}`);
 
   footer();

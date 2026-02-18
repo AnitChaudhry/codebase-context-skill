@@ -6,7 +6,7 @@ Guide for setting up and connecting the codebase-context-skill MCP server.
 
 The CCS MCP server exposes 6 tools that provide codebase-context-skill information to Claude Code and other MCP-compatible clients. It runs as a remote HTTP endpoint on Vercel — no local server needed.
 
-**Endpoint:** `https://contextcode.thinqmesh.com/api/mcp`
+**Endpoint:** `https://skills.thinqmesh.com/api/mcp`
 
 ## Available Tools
 
@@ -31,7 +31,7 @@ This automatically creates or updates `.mcp.json` in your project root.
 ### Method 2: CLI One-Liner
 Add to global Claude Code config:
 ```bash
-claude mcp add --transport http ccs https://contextcode.thinqmesh.com/api/mcp
+claude mcp add --transport http ccs https://skills.thinqmesh.com/api/mcp
 ```
 
 ### Method 3: Manual .mcp.json
@@ -41,7 +41,7 @@ Create `.mcp.json` in your project root:
   "mcpServers": {
     "ccs": {
       "type": "http",
-      "url": "https://contextcode.thinqmesh.com/api/mcp"
+      "url": "https://skills.thinqmesh.com/api/mcp"
     }
   }
 }
@@ -91,7 +91,7 @@ If you already have `.mcp.json` with other MCP servers, `/ccs-connect` will merg
     "filesystem": { "command": "npx", "args": ["@modelcontextprotocol/server-filesystem", "/path"] },
     "ccs": {
       "type": "http",
-      "url": "https://contextcode.thinqmesh.com/api/mcp"
+      "url": "https://skills.thinqmesh.com/api/mcp"
     }
   }
 }
@@ -102,15 +102,15 @@ If you already have `.mcp.json` with other MCP servers, `/ccs-connect` will merg
 Test the endpoint manually:
 ```bash
 # Health check (GET)
-curl https://contextcode.thinqmesh.com/api/mcp
+curl https://skills.thinqmesh.com/api/mcp
 
 # MCP initialize request (POST)
-curl -X POST https://contextcode.thinqmesh.com/api/mcp \
+curl -X POST https://skills.thinqmesh.com/api/mcp \
   -H "Content-Type: application/json" \
   -d '{"jsonrpc":"2.0","method":"initialize","id":1}'
 
 # List tools (POST)
-curl -X POST https://contextcode.thinqmesh.com/api/mcp \
+curl -X POST https://skills.thinqmesh.com/api/mcp \
   -H "Content-Type: application/json" \
   -d '{"jsonrpc":"2.0","method":"tools/list","id":2}'
 ```
@@ -125,7 +125,7 @@ claude mcp get ccs     # Check CCS server details
 
 | Issue | Solution |
 |-------|---------|
-| "Server not found" | Run `/ccs-connect` or `claude mcp add --transport http ccs https://contextcode.thinqmesh.com/api/mcp` |
+| "Server not found" | Run `/ccs-connect` or `claude mcp add --transport http ccs https://skills.thinqmesh.com/api/mcp` |
 | "Connection refused" | Check internet connectivity, verify URL |
 | Tools not showing | Restart Claude Code session after adding MCP config |
 | Conflict with existing config | `/ccs-connect` merges safely — check `.mcp.json` for duplicate entries |
@@ -149,7 +149,7 @@ User's Project
 
                     ↓ MCP Protocol (HTTP)
 
-Vercel (contextcode.thinqmesh.com)
+Vercel (skills.thinqmesh.com)
 └── api/mcp.js                   ← Serverless MCP endpoint
     ├── ccs-info
     ├── ccs-commands

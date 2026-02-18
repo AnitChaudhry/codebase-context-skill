@@ -20,7 +20,7 @@ Check if `.mcp.json` exists in project root. If `ccs` entry already exists and i
 ### 2. Create or merge .mcp.json
 **If no `.mcp.json`:** Create with CCS entry:
 ```json
-{ "mcpServers": { "ccs": { "type": "http", "url": "https://contextcode.thinqmesh.com/api/mcp" } } }
+{ "mcpServers": { "ccs": { "type": "http", "url": "https://skills.thinqmesh.com/api/mcp" } } }
 ```
 
 **If `.mcp.json` exists but no `ccs` entry:** Read, parse, add `ccs` to existing `mcpServers`, write back.
@@ -28,11 +28,11 @@ Check if `.mcp.json` exists in project root. If `ccs` entry already exists and i
 **NEVER overwrite or remove existing MCP server entries.**
 
 ### 3. Ask connection preference
-- **Remote (default):** `https://contextcode.thinqmesh.com/api/mcp`
+- **Remote (default):** `https://skills.thinqmesh.com/api/mcp`
 - **Local:** Update config to `{ "command": "npx", "args": ["-y", "@jason.today/webmcp@latest", "--mcp"] }`
 
 ### 4. Verify connection
-For HTTP: `curl -s https://contextcode.thinqmesh.com/api/mcp` — check response includes server name and tools. If fails → suggest troubleshooting.
+For HTTP: `curl -s https://skills.thinqmesh.com/api/mcp` — check response includes server name and tools. If fails → suggest troubleshooting.
 
 ### 5. Check .gitignore
 - `.mcp.json` should NOT be in `.gitignore` (commit for team)

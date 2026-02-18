@@ -109,7 +109,7 @@ The plugin ships with a `.mcp.json` that configures the CCS remote MCP server au
   "mcpServers": {
     "ccs": {
       "type": "http",
-      "url": "https://contextcode.thinqmesh.com/api/mcp"
+      "url": "https://skills.thinqmesh.com/api/mcp"
     }
   }
 }
@@ -126,7 +126,7 @@ The plugin ships with a `.mcp.json` that configures the CCS remote MCP server au
 
 **Alternative (global config):**
 ```bash
-claude mcp add --transport http ccs https://contextcode.thinqmesh.com/api/mcp
+claude mcp add --transport http ccs https://skills.thinqmesh.com/api/mcp
 ```
 
 > **Note:** All MCP config lives in the plugin's `.mcp.json` at your project root. To modify the endpoint or switch between remote/local, edit this file directly — do not modify `~/.claude/settings.json` for project-level config.

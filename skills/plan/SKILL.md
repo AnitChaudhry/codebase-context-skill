@@ -1,115 +1,57 @@
 ---
 name: plan
-description: "Plan a task with full dependency-aware context — identifies all files to read, modify, create, and test before any work begins"
+description: "Plan a task with full dependency-aware context"
 argument-hint: "[task description]"
 user-invocable: true
-allowed-tools: Read, Write, Edit, Glob, Grep, AskUserQuestion
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Task, EnterPlanMode
 model: claude-opus-4-6
 context: fork
 agent: general-purpose
 ---
 
-# Plan Task
+# Plan
 
-## Overview
-Creates a comprehensive implementation plan before any code is written. Identifies all files that need to be read, modified, created, or deleted — and logs the plan as a commit-style entry in task.md.
+Create a comprehensive implementation plan before any code is written — identify all files to read, modify, create, and test.
 
-## When to Use
-- Before starting any non-trivial feature or change
-- When you need to understand the full scope of a task
-- Before a refactor to identify the blast radius
-- When estimating effort for a task
+## Steps
 
-## Instructions
+### 1. Understand the task
+Parse `$ARGUMENTS`. Classify: new-feature, enhancement, bug-fix, refactor, migration, config-change.
 
-### Step 1: Understand the Task
-1. Parse `$ARGUMENTS` to understand what the user wants to build/change
-2. Classify the task: new-feature, enhancement, bug-fix, refactor, migration, config-change
+### 2. Load context
+- `.ccs/architecture.md` → where this task fits
+- `.ccs/file-index.md` → relevant files by rank
+- `.ccs/project-map.md` → dependency chains
+- `.ccs/conventions.md` → patterns to follow
 
-### Step 2: Load Context
-1. Read `.ccs/architecture.md` to understand where this task fits
-2. Read `.ccs/file-index.md` to identify relevant files by rank
-3. Read `.ccs/project-map.md` to trace dependency chains
-4. Read `.ccs/conventions.md` to know what patterns to follow
+### 3. Identify files
+Using index lookup + targeted Grep:
+- **READ:** Direct matches, dependency chain files, similar implementations, test files
+- **MODIFY:** Files where logic changes, importers (if interface changes), affected tests
+- **CREATE:** New components/modules, new tests, new types
+- **DELETE:** Replaced or deprecated files
 
-### Step 3: Identify Files
-Using the hybrid approach (index lookup + targeted grep):
+### 4. Create plan in `.ccs/task.md`
+Append entry using template at `.claude/skills/_ccs/templates/task-template.md`:
+- Status: `planned`, Type: task type
+- Implementation steps (numbered)
+- Files to read/modify/create/delete (with ranks and reasons)
+- Dependencies identified, test strategy
+- Risk assessment: blast radius, breaking changes, test coverage impact
 
-**Files to READ** (understand context):
-- Direct matches from index (files with matching symbols/names)
-- Dependency chain files (imports of matched files)
-- Similar existing implementations (grep for similar patterns)
-- Test files for affected code
+### 5. Present to user
+Output the plan in readable format. Ask for confirmation before proceeding.
 
-**Files to MODIFY** (make changes):
-- Files where the actual logic change goes
-- Files that import modified files (if interface changes)
-- Test files that need updating
+## Rules
+- Never start coding — plan only
+- If task is trivial (1-2 files, no dependencies) → suggest `/ccs-build` directly
+- After approval → suggest `/ccs-build` to execute
 
-**Files to CREATE** (new files):
-- New components/modules
-- New test files
-- New types/interfaces
-
-**Files to DELETE** (cleanup):
-- Replaced files
-- Deprecated code
-
-### Step 4: Create Plan
-Log a plan entry in `.ccs/task.md`:
-
-```markdown
-## Task #{next_number}: {task_title}
-
-**Timestamp:** {now}
-**Status:** planned
-**Type:** {task_type}
-**Description:** {detailed description}
-
-### Implementation Plan
-1. {step_1}
-2. {step_2}
-3. {step_3}
-
-### Files to Read
-| File | Rank | Reason |
-|------|------|--------|
-| {file} | {rank} | {reason} |
-
-### Files to Modify
-| File | Change |
-|------|--------|
-| {file} | {what changes} |
-
-### Files to Create
-| File | Purpose |
-|------|---------|
-| {file} | {purpose} |
-
-### Files to Delete
-| File | Reason |
-|------|--------|
-| {file} | {reason} |
-
-### Dependencies Identified
-{dependency chain}
-
-### Test Strategy
-{what tests to run/write}
-
-### Risk Assessment
-- Blast radius: {low/medium/high}
-- Breaking changes: {yes/no}
-- Test coverage impact: {description}
-```
-
-### Step 5: Present to User
-Output the plan in a readable format and ask for confirmation before proceeding.
-
-## Limitations
-- Plan is based on static analysis — runtime behavior may differ
-- Cannot predict all side effects of changes
-- Large tasks may need to be broken into sub-tasks
+## Refs
+- Architecture: `.ccs/architecture.md`
+- File index: `.ccs/file-index.md`
+- Task template: `.claude/skills/_ccs/templates/task-template.md`
+- Strategy: `.claude/skills/_ccs/references/context-strategies.md`
 
 ---
-*Built by [Anit Chaudhary](https://github.com/AnitChaudhry) — codebase-context-skill v1.0.0*
+*codebase-context-skill v1.0.0*

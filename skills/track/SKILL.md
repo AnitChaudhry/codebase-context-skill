@@ -1,111 +1,50 @@
 ---
 name: track
-description: "View and manage the session task log — see all changes, research, tests, and audits performed this session with commit-style history"
-argument-hint: "[summary | detail | clear | export]"
+description: "View/manage the session task log"
+argument-hint: "[summary | detail | clear | export | files | stats]"
 user-invocable: true
-allowed-tools: Read, Write, Glob, Grep
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Task, EnterPlanMode
 model: claude-haiku-4-5-20251001
 context: fork
 agent: general-purpose
 ---
 
-# Session Tracker
+# Track
 
-## Overview
-Displays the session task log (`.ccs/task.md`) in various formats. Shows every action taken this session — builds, fixes, tests, audits, research — with full commit-style details.
+Display the session task log (`.ccs/task.md`) in various formats.
 
-## When to Use
-- Check what's been done this session
-- Get a summary before ending work
-- Export session history for documentation
-- Clear the task log for a fresh start
-- Understand context that's been built up during the session
+## Steps
 
-## Instructions
+### 1. Parse arguments
+- No arg or `summary` → compact summary view
+- `detail` → full task log with all entries
+- `clear` → archive current log, start fresh
+- `export` → export as standalone markdown file
+- `files` → list only files touched this session
+- `stats` → session statistics
 
-### Parse Arguments
-Parse `$ARGUMENTS`:
-- **No argument or "summary"** → Compact summary view
-- **"detail"** → Full task log with all entries
-- **"clear"** → Archive current log and start fresh
-- **"export"** → Export as a standalone markdown file
-- **"files"** → List only files touched this session
-- **"stats"** → Session statistics
+### 2. Execute
 
-### Summary View (default)
-Read `.ccs/task.md` and output:
+**Summary:** Read `.ccs/task.md`. Output: session start time, task counts by type (builds, fixes, tests, audits, reviews, research), files touched (read/modified/created/deleted), test results, audit findings, estimated token savings.
 
-```
-Session Summary
-├── Started: {timestamp}
-├── Tasks completed: {count}
-│   ├── Builds: {count}
-│   ├── Fixes: {count}
-│   ├── Tests: {count}
-│   ├── Audits: {count}
-│   ├── Reviews: {count}
-│   ├── Research: {count}
-│   └── Other: {count}
-│
-├── Files touched: {count}
-│   ├── Read: {count}
-│   ├── Modified: {count}
-│   ├── Created: {count}
-│   └── Deleted: {count}
-│
-├── Test results: {passed}/{total} ({last_run_time})
-├── Audit findings: {critical}/{high}/{medium}/{low}
-│
-└── Context savings: ~{estimate}% fewer tokens vs no indexing
-```
+**Detail:** Output full `.ccs/task.md` content.
 
-### Detail View
-Output the full `.ccs/task.md` content.
+**Clear:** Copy `.ccs/task.md` to `.ccs/task-archive-{timestamp}.md`. Create fresh `.ccs/task.md` with new session header.
 
-### Clear
-1. Copy current `.ccs/task.md` to `.ccs/task-archive-{timestamp}.md`
-2. Create fresh `.ccs/task.md` with new session header
-3. Report: "Session archived. Fresh task log started."
+**Export:** Write full log to `session-report-{timestamp}.md` in project root.
 
-### Export
-1. Read full `.ccs/task.md`
-2. Write to `session-report-{timestamp}.md` in project root
-3. Report: "Session exported to {filename}"
+**Files:** Extract all unique file paths from task.md entries. Group by: modified, created, deleted, read-only.
 
-### Files View
-Extract all unique file paths from task.md entries:
-```
-Files Touched This Session
-├── Modified:
-│   ├── src/auth/login.ts
-│   └── src/api/users.ts
-├── Created:
-│   └── src/utils/validator.ts
-├── Deleted:
-│   └── src/old/deprecated.ts
-└── Read Only:
-    ├── src/config/db.ts
-    └── src/types/user.ts
-```
+**Stats:** Output: duration, total tasks, files read (estimated tokens), files modified, lines changed, test runs, research queries, web fetches.
 
-### Stats View
-```
-Session Statistics
-├── Duration: {time since session start}
-├── Total tasks: {count}
-├── Files read: {count} (estimated {tokens} tokens)
-├── Files modified: {count}
-├── Lines changed: ~{estimate}
-├── Test runs: {count}
-├── Research queries: {count}
-├── Web fetches: {count}
-└── Context file refreshes: {count}
-```
+## Rules
+- Read only `.ccs/task.md` — never scan the codebase
+- If `.ccs/task.md` missing → "No session log. Run `/ccs-init` to start."
+- Keep output concise — summaries over raw dumps
 
-## Limitations
-- Token savings estimate is approximate
-- Line change count is estimated from diff summaries in task.md
-- Stats depend on task.md entries being complete
+## Refs
+- Task log: `.ccs/task.md`
+- Task template: `.claude/skills/_ccs/templates/task-template.md`
 
 ---
-*Built by [Anit Chaudhary](https://github.com/AnitChaudhry) — codebase-context-skill v1.0.0*
+*codebase-context-skill v1.0.0*

@@ -1,152 +1,245 @@
 # Context Engineering Strategies
 
-Reference document for the codebase-context-skill plugin. Contains proven strategies for intelligent file selection, context building, and token optimization.
+Strict rules for every CCS skill. This document governs how context is gathered, which model handles what, and how tokens are spent. Every skill MUST follow these rules.
 
-## File Selection Strategy (Hybrid Approach)
+---
 
-### Pass 1: Index Lookup (Zero Cost)
-Read `.ccs/file-index.md` and `.ccs/project-map.md` to find files matching the query by:
-- File name/path keywords
-- Export/import symbols
-- File role (component, util, config, test, etc.)
-- Centrality rank (most-imported files first)
+## Model Roles — The Three Minds
 
-### Pass 2: Local Live Scan (Zero API Cost)
-Use Glob + Grep with targeted patterns:
-- Search for function/class/variable names mentioned in query
-- Search for related terms (e.g., "auth" -> login, session, token, middleware)
-- Check file modification times for recently changed files
+Each model has ONE job. Do not misuse them.
 
-### Pass 3: Dependency Walking
-For each matched file from Pass 1+2:
-- Follow import statements to find dependencies
-- Follow reverse imports to find dependents
-- Limit depth to 2 levels (file -> imports -> imports of imports)
-- Only include files that add context to the query
+### Haiku 4.5 — The Eyes (Scout)
+**Job:** Look at things fast and cheap. Scan files. Search patterns. Read indexes. Report findings.
+- Reads `.ccs/` reference files
+- Runs Glob and Grep searches
+- Reads file headers (first 50 lines)
+- Counts, lists, summarizes existing data
+- **NEVER writes code.** NEVER reasons about architecture. NEVER makes decisions.
 
-### Decision Rules
-- If index lookup returns 3+ high-confidence matches → skip live scan
-- If index has no matches → do full live scan
-- If query mentions specific file/function → go directly to that file
-- Never read more than 15 files per query unless explicitly requested
-- Prefer reading file headers (first 50 lines) before full file reads
+### Sonnet 4.6 — The Hands (Executor)
+**Job:** Write code. Edit files. Run commands. Execute plans that already exist.
+- Implements features from a plan
+- Fixes bugs where the root cause is already identified
+- Runs tests and applies fixes
+- Writes to files, runs Bash commands
+- **NEVER explores.** NEVER reads files to "understand." Gets told exactly what to do.
 
-## Context Building Patterns
+### Opus 4.6 — The Brain (Thinker)
+**Job:** Understand. Reason. Plan. Decide. Analyze complex situations.
+- Reads code to understand WHY it works that way
+- Plans implementation strategies
+- Analyzes dependencies and blast radius
+- Reviews code for logic, security, architecture issues
+- Resolves ambiguous situations (merge conflicts, refactoring scope)
+- **NEVER does grunt work.** NEVER scans files that Haiku already scanned.
 
-### For Feature Building
-1. Read the architecture doc to understand where the feature fits
-2. Find existing similar features via grep
-3. Read the conventions doc for patterns to follow
-4. Identify all files that need modification
-5. Read those files + their direct dependencies
+---
 
-### For Bug Fixing
-1. Find the error message or symptom in the codebase
-2. Trace the call chain from symptom to root cause
-3. Read the test files for the affected code
-4. Check recent git changes to the affected files
-5. Identify the minimal set of files to fix
+## Phase-Based Task Execution
 
-### For Refactoring
-1. Find all usages of the target code (grep for symbols)
-2. Build the full dependency tree (who imports this?)
-3. Identify the blast radius (all files affected by change)
-4. Read test files to understand expected behavior
-5. Check for interface contracts that must be preserved
+Every non-trivial task goes through phases. Each phase uses the RIGHT model.
 
-### For Auditing
-1. Read architecture doc for system overview
-2. Scan for known patterns (security: eval, innerHTML, SQL strings; performance: N+1, blocking I/O; patterns: consistency)
-3. Focus on boundary code (API handlers, auth middleware, DB queries)
-4. Check test coverage for critical paths
-5. Review error handling patterns
+### Single-Phase Tasks (one model only)
+These are simple enough for one model:
+- `/ccs-status` → Haiku reads 3 files, reports. Done.
+- `/ccs-stash` → Haiku runs git stash, logs context. Done.
+- `/ccs-log` → Haiku reads git log, cross-references task.md. Done.
 
-### For Testing
-1. Read existing test files and test config
-2. Understand test framework and patterns used
-3. Identify untested code paths
-4. Read source files that tests target
-5. Check CI/CD config for test commands
+### Two-Phase Tasks (scout → execute)
+The scout finds, the executor acts:
+- `/ccs-fix`: **Phase 1** (Haiku-speed scanning) — Grep for error, find the file, read the function. **Phase 2** (Sonnet execution) — Apply the fix, verify.
+- `/ccs-build`: **Phase 1** — Read file-index + conventions, identify target files. **Phase 2** — Write the code following identified patterns.
+- `/ccs-test`: **Phase 1** — Find test files, read test config. **Phase 2** — Run tests, apply fixes.
+- `/ccs-branch`: **Phase 1** — Read git state, check existing refs. **Phase 2** — Execute git command, generate ref file.
+- `/ccs-sync`: **Phase 1** — Fetch, check divergence, read branch ref. **Phase 2** — Pull/push/rebase.
 
-## Token Optimization Rules
+### Three-Phase Tasks (scout → think → execute)
+Complex tasks need all three minds:
+- `/ccs-plan`: **Phase 1** (scan) — Read file-index, architecture, project-map. **Phase 2** (reason) — Analyze dependencies, design approach, write plan. **Phase 3** — Save plan to task.md.
+- `/ccs-refactor`: **Phase 1** — Find all usages via Grep. **Phase 2** — Analyze blast radius, plan safe order. **Phase 3** — Execute refactoring steps.
+- `/ccs-audit`: **Phase 1** — Scan for patterns (Grep for eval, innerHTML, SQL strings). **Phase 2** — Analyze findings for real vs false positives. **Phase 3** — Write report.
+- `/ccs-review`: **Phase 1** — Read changed files + their context. **Phase 2** — Reason about correctness, security, patterns. **Phase 3** — Write review.
+- `/ccs-pr`: **Phase 1** — Read branch ref, git diff, file-index. **Phase 2** — Analyze impact, write PR description. **Phase 3** — Save to .ccs/pulls/.
+- `/ccs-merge`: **Phase 1** — Read both branch refs, find overlapping files. **Phase 2** — Predict conflicts, plan strategy. **Phase 3** — Execute merge.
+- `/ccs-diff`: **Phase 1** — Get changed files via git. **Phase 2** — Walk dependency chains, categorize changes. **Phase 3** — Write impact report.
 
-1. **Read file-index.md first** — it's a compact summary of the entire codebase
-2. **Use Glob for discovery** — file names alone tell you a lot
-3. **Use Grep for confirmation** — search for specific symbols before reading whole files
-4. **Read headers first** — first 50 lines of a file usually contain imports and exports
-5. **Skip test files initially** — unless the query is about testing
-6. **Skip generated files** — node_modules, dist, build, .next, etc.
-7. **Skip config files** — unless the query is about configuration
-8. **Batch reads** — read multiple small files in parallel instead of sequentially
-9. **Cache in task.md** — record what you learned so you don't re-read files
-10. **Use the architecture doc** — it tells you where to look without reading source code
+### Key Rule: Phases Do NOT Repeat
+Phase 1 output feeds Phase 2. Phase 2 output feeds Phase 3. Nothing goes backward. If Phase 2 discovers missing context, it reads ONLY the specific missing file — it does NOT re-run Phase 1.
 
-## Token Guardrails — Anti-Waste Rules
+---
 
-### The Problem This Solves
-Without guardrails, Claude Code wastes 200K+ tokens per task:
-1. Spawns an Explore agent → reads 50+ files to "understand" the codebase
-2. Spawns a Plan agent → re-reads many of the same files
-3. Starts coding → reads files again because the previous context is gone
-4. Each agent is a separate context fork — nothing is shared
+## File Selection — Strict Rules
 
-### How CCS Eliminates This
-CCS maintains `.ccs/` reference files that replace all exploratory reading:
-- **`.ccs/file-index.md`** replaces "let me scan the codebase" (saves ~100K tokens)
-- **`.ccs/architecture.md`** replaces "let me understand the system" (saves ~50K tokens)
-- **`.ccs/project-map.md`** replaces "let me trace dependencies" (saves ~30K tokens)
-- **`.ccs/branches/<name>.md`** replaces "let me check what changed on this branch" (saves ~50K tokens)
+### What to Read and When
 
-### Rules for All CCS Skills
+**Before touching ANY source file, check these in order:**
+1. `.ccs/file-index.md` — Does the file-index mention relevant files? If yes, you already know what to read.
+2. `.ccs/branches/<name>.md` — Is there a branch ref? If yes, it tells you what changed.
+3. `.ccs/task.md` — Did a previous task already read this? If yes, use that context.
+4. `.ccs/research/<topic>.md` — Was this already researched? If yes, use the saved result.
 
-1. **NEVER spawn an Explore agent** — the index already exists. Read `.ccs/file-index.md` instead.
-2. **NEVER read a file "just to understand"** — read it only if you need to modify it or it directly answers the query.
-3. **NEVER read more than 15 files per command** — if you need more, the index is stale (run `/ccs-refresh`).
-4. **ALWAYS read the header first (50 lines)** — only read the full file if the header confirms relevance.
-5. **ALWAYS check `.ccs/task.md` first** — a previous task may have already gathered the context you need.
-6. **ALWAYS use Grep before Read** — find the exact line, then read only that section.
-7. **NEVER re-explore after switching branches** — read `.ccs/branches/<name>.md` instead.
-8. **Model selection is final** — Haiku skills never escalate to Sonnet. Sonnet skills never escalate to Opus. If more analysis is needed, the user runs a different skill.
+**Only THEN do a targeted search:**
+5. Grep for specific symbol/function/error message
+6. Read ONLY the matched file, ONLY the matched section (use offset + limit)
 
-### Token Budget Per Skill Type
-| Skill Type | Max Files Read | Max Lines Read | Target Tokens |
-|-----------|---------------|----------------|---------------|
-| Status/Query/Track/Log/Stash | 3-5 | 500 | <5K |
-| Build/Fix/Test/Branch/Sync | 5-15 | 2000 | <20K |
-| Init/Plan/Refactor/Audit/Review/PR/Merge/Diff | 10-25 | 5000 | <50K |
+### What NEVER to Do
+- NEVER run `Glob("**/*.ts")` to "see what's there" — the file-index already has this
+- NEVER read an entire file when you need one function — use Grep to find the line, then Read with offset
+- NEVER read test files unless the task is about testing
+- NEVER read config files unless the task is about configuration
+- NEVER read node_modules, dist, build, .next, or any generated directory
+- NEVER spawn a Task/Explore agent — the `.ccs/` files replace all exploration
 
-### What Replaces Agent Spawning
-| Without CCS | With CCS |
-|-------------|----------|
-| Spawn Explore agent (100K+ tokens) | Read `.ccs/file-index.md` (2K tokens) |
-| Spawn Plan agent (50K+ tokens) | Read `.ccs/architecture.md` + branch ref (3K tokens) |
-| Re-read files after branch switch | Read `.ccs/branches/<name>.md` (1K tokens) |
-| Full codebase scan for PR | Read branch ref + `git diff --stat` (2K tokens) |
-| Manual dependency tracing | Read `.ccs/project-map.md` (2K tokens) |
+### Reading Strategy
+| Need | Action | Cost |
+|------|--------|------|
+| "What files exist?" | Read `.ccs/file-index.md` | ~2K tokens |
+| "How is this structured?" | Read `.ccs/architecture.md` | ~1K tokens |
+| "What depends on X?" | Read `.ccs/project-map.md` | ~2K tokens |
+| "What changed on this branch?" | Read `.ccs/branches/<name>.md` | ~1K tokens |
+| "Where is function X defined?" | Grep for `function X\|const X\|class X` | ~0.1K tokens |
+| "What does this function do?" | Read file with offset at the Grep match, limit 30 lines | ~0.5K tokens |
+| "What's the full file?" | Read entire file — ONLY if you're about to modify it | ~2-5K tokens |
 
-## Aider's Repo Map Approach (Reference)
+---
 
-The most token-efficient codebase understanding technique:
-1. Parse all files with tree-sitter for definitions and references
-2. Build a graph: files are nodes, imports/references are edges
-3. Run PageRank to rank files by importance
-4. Generate a map with only the highest-ranked symbols
-5. Result: 5-10% of codebase size captures 90% of architecture
+## Web Research Persistence
 
-## JetBrains Research Finding
+When ANY skill uses WebSearch or WebFetch, the results MUST be saved locally.
 
-Observation masking outperforms LLM summarization for context compression:
-- Replace older tool outputs with placeholders using a rolling window
-- Maintain complete reasoning and action history
-- 50%+ cost reduction vs unmanaged context
-- Simpler approaches win on both cost and performance
+### Save Rule
+Every web research result gets saved to `.ccs/research/<topic>.md`:
 
-## Sourcegraph Cody's Multi-Signal Retrieval
+```markdown
+# Research: <topic>
 
-Different retrieval methods surface complementary information:
-- **Keyword search** — precise for known terms
-- **Semantic search** — for conceptually related code
-- **Graph-based retrieval** — for function calls and implementations
-- **Local context** — editor state, recent history
+> Fetched: <timestamp>
+> Source: <URL>
+> Query: <search query>
 
-No single approach is sufficient. Combine at least 2 for good results.
+## Findings
+<extracted content — only the relevant parts, not entire pages>
+
+## Applied To
+- Task #N: <how this was used>
+
+---
+```
+
+### Lookup Rule
+Before ANY WebSearch or WebFetch:
+1. Check `.ccs/research/` for existing files on this topic
+2. If a file exists and is <7 days old → use it, skip the web call
+3. If a file exists but is >7 days old → re-fetch and update
+4. If no file exists → fetch, save, then use
+
+### Why This Matters
+- Web research costs 5-10K tokens per call (fetch + process)
+- Saving locally means the ENTIRE project benefits — every session, every skill
+- Common lookups (framework docs, error solutions, library APIs) are fetched ONCE
+- `.ccs/research/` becomes the project's knowledge base
+
+---
+
+## Strict Anti-Waste Rules
+
+### Rule 1: No Exploratory Reading
+**Wrong:** "Let me read through the codebase to understand it"
+**Right:** Read `.ccs/architecture.md` (1K tokens) — it already describes the system
+
+### Rule 2: No Redundant Agent Spawning
+**Wrong:** Spawn Explore agent → reads 50 files → spawns Plan agent → re-reads 30 files
+**Right:** Read `.ccs/file-index.md` → Grep for specific symbols → Read only matched files
+
+### Rule 3: No Full-File Reads for Partial Needs
+**Wrong:** `Read("src/auth.ts")` — reads all 400 lines when you need line 23
+**Right:** `Grep("validateToken", "src/auth.ts")` → `Read("src/auth.ts", offset=20, limit=30)`
+
+### Rule 4: No Re-Scanning After Branch Switch
+**Wrong:** "Let me understand what's on this branch" → reads 20 files
+**Right:** `Read(".ccs/branches/feature-auth.md")` → knows everything in 1K tokens
+
+### Rule 5: No Repeated Web Fetches
+**Wrong:** WebSearch("React useEffect cleanup") — same search done 3 sessions ago
+**Right:** `Read(".ccs/research/react-useeffect-cleanup.md")` — already saved locally
+
+### Rule 6: Index Staleness Check Before Re-Scanning
+If the index doesn't have what you need:
+- **DO NOT** re-scan the codebase manually
+- **DO** tell the user: "Index may be stale. Run `/ccs-refresh` to update."
+- The refresh skill handles re-indexing efficiently (incremental mode)
+
+### Rule 7: Task.md is Shared Memory
+Before any skill starts work:
+1. Read `.ccs/task.md` — check if a recent task already gathered relevant context
+2. If Task #5 already read `src/auth.ts` and noted "uses JWT with RS256, validateToken at line 23" → use that finding, don't re-read the file
+
+---
+
+## Complexity-Based Model Selection
+
+Not every task needs the same level of thinking. Match complexity to model.
+
+### Quick Tasks — Haiku Only
+- Status checks, file counts, staleness reports
+- Git stash save/pop, commit log display
+- Reading and displaying existing .ccs/ data
+- Listing branches, showing branch refs
+- **Token budget: <5K**
+
+### Standard Tasks — Haiku Scout + Sonnet Execute
+- Building a feature where the plan already exists
+- Fixing a bug where the symptom points to a clear location
+- Running tests and applying obvious fixes
+- Creating/switching branches, syncing with remote
+- **Token budget: <20K**
+
+### Complex Tasks — Haiku Scout + Opus Think + Sonnet Execute
+- Planning a feature (need to reason about architecture)
+- Refactoring (need to trace all dependencies)
+- Code review (need to reason about correctness)
+- PR preparation (need to analyze blast radius)
+- Merge analysis (need to predict conflicts)
+- Security/performance audit (need to identify real vs false positives)
+- **Token budget: <50K**
+
+### Research Tasks — Haiku Scout + WebSearch + Save
+- Looking up official documentation
+- Resolving unknown errors
+- Checking dependency health/CVEs
+- **Token budget: <15K** (including web fetch)
+- **ALWAYS save results to `.ccs/research/`**
+
+---
+
+## When Something Doesn't Work
+
+### Error Resolution Flow
+1. Read the error message carefully
+2. Grep the codebase for the error string
+3. Check `.ccs/research/` for previous solutions
+4. If not found locally → WebSearch for the error + framework
+5. Save the solution to `.ccs/research/<error-topic>.md`
+6. Apply the fix
+7. Log everything in task.md
+
+### Skill Escalation
+If a skill cannot complete its task:
+- **Haiku skill stuck?** → Tell the user to run an Opus skill (e.g., `/ccs-plan` or `/ccs-review`)
+- **Sonnet skill stuck?** → The plan may be incomplete. Tell the user to run `/ccs-plan` first.
+- **Opus skill stuck?** → The index may be stale. Tell the user to run `/ccs-refresh`.
+- **NEVER silently escalate** — always tell the user what to do next.
+
+---
+
+## Reference: Industry Approaches
+
+### Aider's Repo Map
+Parse all files → build graph → PageRank → top symbols only.
+Result: 5-10% of codebase captures 90% of architecture. CCS uses this principle for file-index.md.
+
+### JetBrains Research
+Observation masking beats LLM summarization: replace old tool outputs with placeholders. 50%+ cost reduction. CCS uses this via task.md (cached findings replace re-reading).
+
+### Sourcegraph Cody
+Multi-signal retrieval: keyword + semantic + graph + local context. No single approach is sufficient. CCS combines index lookup + Grep + dependency walking.

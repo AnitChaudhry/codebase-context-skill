@@ -1,121 +1,59 @@
 ---
 name: deploy
-description: "Pre-deployment checklist — verifies tests pass, build succeeds, env vars set, no breaking changes, dependencies locked, and generates deploy report"
+description: "Pre-deployment checklist — tests, build, env vars, deps, breaking changes"
 user-invocable: true
-allowed-tools: Read, Write, Glob, Grep, Bash, WebSearch, AskUserQuestion
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Task, EnterPlanMode
 model: claude-opus-4-6
 context: fork
 agent: general-purpose
 ---
 
-# Deploy Checklist
+# Deploy
 
-## Overview
-Runs a comprehensive pre-deployment checklist to catch issues before they reach production. Verifies tests, build, environment variables, dependencies, breaking changes, and generates a deploy-ready report.
+Run a comprehensive pre-deployment checklist to catch issues before production.
 
-## When to Use
-- Before deploying to staging or production
-- Before creating a release PR
-- As a final check after a series of changes
-- Before merging a feature branch
+## Steps
 
-## Instructions
+### 1. Load context
+- `.ccs/architecture.md` → build/deploy commands, deploy target
+- `.ccs/task.md` → all changes made this session
+- `.ccs/conventions.md` → git/CI conventions
 
-### Step 1: Load Context
-1. Read `.ccs/architecture.md` for build/deploy commands and deploy target
-2. Read `.ccs/task.md` for all changes made this session
-3. Read `.ccs/conventions.md` for git/CI conventions
+### 2. Run checklist
 
-### Step 2: Run Checklist
+**Tests:** Run full test suite. Report passed/total. Flag skipped tests.
 
-#### 2.1 Tests
-- [ ] Run full test suite (`npm test` / `pytest` / `go test` / etc.)
-- [ ] All tests pass (0 failures)
-- [ ] No skipped tests that should be running
-- Report: `{passed}/{total} tests pass`
+**Build:** Run build command. Report success/failure and output size.
 
-#### 2.2 Build
-- [ ] Run build command (`npm run build` / `go build` / etc.)
-- [ ] Build succeeds without errors
-- [ ] Build succeeds without warnings (or warnings are acceptable)
-- [ ] Build output is reasonable size
-- Report: `Build {success/failed} ({size} output)`
+**Linting:** Run linter. Report errors and warnings.
 
-#### 2.3 Linting
-- [ ] Run linter (`npx eslint .` / `flake8` / `golangci-lint run` / etc.)
-- [ ] No errors (warnings may be acceptable)
-- Report: `{errors} errors, {warnings} warnings`
+**Type checking (if applicable):** Run type checker (`tsc --noEmit` / `mypy`). Report type errors.
 
-#### 2.4 Type Checking (if applicable)
-- [ ] Run type checker (`npx tsc --noEmit` / `mypy .` / etc.)
-- [ ] No type errors
-- Report: `{errors} type errors`
+**Environment variables:** Grep for `process.env.`, `os.environ`, `os.Getenv`. Compare with `.env.example`. Check for hardcoded secrets.
 
-#### 2.5 Environment Variables
-1. Grep for `process.env.`, `os.environ`, `os.Getenv`, `env::var` in source
-2. Grep for `.env.example`, `.env.sample`, `.env.template`
-3. Compare: are all referenced env vars documented?
-4. Check for hardcoded secrets (should be env vars)
-- [ ] All env vars documented in .env.example or equivalent
-- [ ] No secrets hardcoded in source
+**Dependencies:** Verify lock file exists and is current. Run `npm audit` / `pip-audit`. Check peer deps.
 
-#### 2.6 Dependencies
-- [ ] Lock file exists and is up-to-date (package-lock.json, yarn.lock, etc.)
-- [ ] No audit vulnerabilities above medium severity
-- [ ] All peer dependencies satisfied
-- Report: `{vulns} vulnerabilities`
+**Breaking changes:** Read `.ccs/task.md` for session changes. Flag modifications to public APIs, exported interfaces, DB schema, config format.
 
-#### 2.7 Breaking Changes
-1. Read `.ccs/task.md` for all changes this session
-2. Check if any modified files are:
-   - Public API endpoints
-   - Exported interfaces/types
-   - Database schema
-   - Configuration format
-3. Flag any potential breaking changes
-- [ ] No unintended breaking changes
-- Report: `{count} potential breaking changes`
+**Git status:** Check for uncommitted changes, branch up-to-date with base, no merge conflicts.
 
-#### 2.8 Git Status
-- [ ] All changes committed (clean working tree)
-- [ ] Branch is up-to-date with base branch
-- [ ] No merge conflicts
-- Report: `{status}`
+### 3. Generate report
+Output table: check, status (pass/fail), details. Verdict: READY / NOT READY / READY WITH WARNINGS. List action items if not ready.
 
-### Step 3: Generate Deploy Report
-```markdown
-# Deploy Checklist Report
+### 4. Log to `.ccs/task.md`
+Append using template at `.claude/skills/_ccs/templates/task-template.md`: checklist results, verdict.
 
-**Timestamp:** {now}
-**Branch:** {branch}
-**Changes this session:** {count} tasks
+## Rules
+- Run ALL checks — do not skip any
+- Cannot run actual deployment — checklist only
+- After passing → user deploys manually or via CI
+- If tests fail → suggest `/ccs-fix` or `/ccs-test --fix`
 
-## Results
-| Check | Status | Details |
-|-------|--------|---------|
-| Tests | {pass/fail} | {passed}/{total} |
-| Build | {pass/fail} | {details} |
-| Lint | {pass/fail} | {errors} errors |
-| Types | {pass/fail/n/a} | {errors} errors |
-| Env Vars | {pass/fail} | {missing count} missing |
-| Dependencies | {pass/fail} | {vuln count} vulnerabilities |
-| Breaking Changes | {pass/warn} | {count} flagged |
-| Git Status | {clean/dirty} | {details} |
-
-## Verdict: {READY / NOT READY / READY WITH WARNINGS}
-
-## Action Items (if not ready)
-1. {action}
-2. {action}
-```
-
-### Step 4: Track
-Log deploy check in `.ccs/task.md`.
-
-## Limitations
-- Cannot run actual deployment
-- Cannot verify external services (DB connections, API endpoints)
-- Breaking change detection is based on file analysis, not API contract testing
+## Refs
+- Architecture: `.ccs/architecture.md`
+- Task log: `.ccs/task.md`
+- Task template: `.claude/skills/_ccs/templates/task-template.md`
+- Strategy: `.claude/skills/_ccs/references/context-strategies.md`
 
 ---
-*Built by [Anit Chaudhary](https://github.com/AnitChaudhry) — codebase-context-skill v1.0.0*
+*codebase-context-skill v1.0.0*

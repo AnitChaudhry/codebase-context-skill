@@ -1,91 +1,62 @@
 ---
 name: stash
-description: "Stash and restore work-in-progress with tracked context — logs what was being worked on so Claude remembers when unstashing"
-argument-hint: "[save \"message\"] [pop] [list]"
+description: "Stash and restore WIP with tracked context"
+argument-hint: "[save \"message\"] | [pop [index]] | [list] | [drop index]"
 user-invocable: true
-allowed-tools: Read, Write, Glob, Grep, Bash
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Task, EnterPlanMode
 model: claude-haiku-4-5-20251001
 context: fork
 agent: general-purpose
 ---
 
-# Stash with Context
+# Stash
 
-## Overview
-Stashes and restores work-in-progress while tracking what was being worked on. When you stash, the context is logged in the branch ref and task.md. When you pop, Claude immediately knows what you were doing without re-scanning.
+Stash and restore work-in-progress while tracking what was being worked on in `.ccs/branches/` and `.ccs/task.md`.
 
-## When to Use
-- Need to switch branches but have uncommitted work
-- Want to save current state before experimenting
-- Need to pull/rebase but have local changes
-- Restoring previous work-in-progress
+## Steps
 
-## Instructions
+### 1. Parse intent
+- `save "<message>"` → stash with message (default if no args: auto-generated message)
+- `pop [index]` → restore stash
+- `list` → show stashes with context
+- `drop <index>` → remove stash
 
-### Step 1: Parse Intent
-- **Save:** `/ccs-stash save "working on auth middleware"`
-- **Pop:** `/ccs-stash pop` or `/ccs-stash pop 0`
-- **List:** `/ccs-stash list`
-- **Drop:** `/ccs-stash drop 0`
-- Default (no args): save with auto-generated message
+### 2. Execute
 
-### Step 2: Execute
+**Save:**
+1. `git status --short` → capture current state
+2. `git diff --stat` → what's changed
+3. `git stash push -m "<message>"`
+4. Update `.ccs/branches/<current>.md` if exists — add stash note
 
-#### Stash Save
-1. Run `git status --short` to capture current state
-2. Run `git diff --stat` to see what's changed
-3. Run `git stash push -m "<message>"` via Bash
-4. Get current branch: `git rev-parse --abbrev-ref HEAD`
-5. Update `.ccs/branches/<current-branch>.md` if it exists — add stash note
-6. Log to task.md
+**Pop:**
+1. `git stash list` → available stashes
+2. Read `.ccs/task.md` → find matching stash save entry for context
+3. `git stash pop <index>`
+4. `git status --short` → show restored state
+5. Display what was being worked on (from task.md)
 
-#### Stash Pop
-1. Run `git stash list` to show available stashes
-2. Read `.ccs/task.md` — find the matching stash save entry for context
-3. Run `git stash pop <index>` via Bash
-4. Run `git status --short` to show restored state
-5. Display what was being worked on (from task.md entry)
-
-#### Stash List
-1. Run `git stash list --format="%gd|%gs|%cr"`
-2. Cross-reference with task.md stash entries
+**List:**
+1. `git stash list --format="%gd|%gs|%cr"`
+2. Cross-reference with `.ccs/task.md` stash entries
 3. Display enriched list with context
 
-#### Stash Drop
-1. Run `git stash drop <index>` via Bash
-2. Log removal to task.md
+**Drop:**
+1. `git stash drop <index>`
 
-### Step 3: Track in task.md
-```markdown
-## Task #{number}: Stash — {action}
+### 3. Log to `.ccs/task.md`
+Append using template at `.claude/skills/_ccs/templates/task-template.md`: action, branch, message, files stashed, stash index.
 
-**Timestamp:** {now}
-**Status:** done
-**Type:** stash
+## Rules
+- Use `git status --short` (faster than verbose)
+- Read `.ccs/task.md` once for context matching
+- Keep stash context under 20 lines
+- Conflicts from stash pop must be resolved manually
 
-### Details
-- **Action:** {save|pop|list|drop}
-- **Branch:** {current-branch}
-- **Message:** {stash message}
-- **Files stashed:** {count}
-- **Stash index:** {index}
-
-### State at Stash Time
-| File | Status |
-|------|--------|
-| {file} | modified |
-| {file} | new file |
-```
-
-## Token Efficiency Rules
-- `git status --short` is faster than `git status` — use short format
-- Read task.md once for context matching, don't re-scan files
-- Keep stash context under 20 lines — just enough to remember what was happening
-
-## Limitations
-- Does not handle merge conflicts from stash pop (user must resolve manually)
-- Stash context is best-effort — untracked files may not have full context
-- Cannot stash individual files (git limitation — use `git stash push -- <file>` if needed)
+## Refs
+- Branch refs: `.ccs/branches/`
+- Task log: `.ccs/task.md`
+- Task template: `.claude/skills/_ccs/templates/task-template.md`
 
 ---
-*Built by [Anit Chaudhary](https://github.com/AnitChaudhry) — codebase-context-skill v1.0.0*
+*codebase-context-skill v1.0.0*

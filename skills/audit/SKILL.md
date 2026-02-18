@@ -1,159 +1,62 @@
 ---
 name: audit
-description: "Audit code for security vulnerabilities, performance issues, pattern inconsistencies, accessibility gaps, dead code, and dependency problems"
-argument-hint: "[scope: security | performance | patterns | accessibility | dead-code | deps | all] [file or directory]"
+description: "Audit code for security, performance, patterns, accessibility, dead code, and deps"
+argument-hint: "[security | performance | patterns | a11y | dead-code | deps | all] [path]"
 user-invocable: true
-allowed-tools: Read, Write, Glob, Grep, Bash, WebSearch, WebFetch, Task
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Task, EnterPlanMode
 model: claude-opus-4-6
 context: fork
 agent: general-purpose
 ---
 
-# Code Audit
+# Audit
 
-## Overview
-Performs a systematic audit of the codebase across multiple dimensions: security, performance, patterns, accessibility, dead code, and dependency health. Produces an actionable report with severity-ranked findings tracked in task.md.
+Systematic code audit across multiple dimensions. Produces an actionable, severity-ranked report.
 
-## When to Use
-- Before a major release or deployment
-- When onboarding to a new codebase
-- Periodic code health checks
-- After major dependency updates
-- When investigating performance or security concerns
-- Before a code review
+## Steps
 
-## Instructions
+### 1. Determine scope
+Parse `$ARGUMENTS`: `security`, `performance`, `patterns`, `a11y`, `dead-code`, `deps`, `all` (default). Optional file/directory path to narrow scope.
 
-### Step 1: Determine Scope
-Parse `$ARGUMENTS`:
-- **"security"** — security-focused audit only
-- **"performance"** — performance audit only
-- **"patterns"** — code consistency and pattern audit
-- **"accessibility"** or **"a11y"** — accessibility audit (UI codebases)
-- **"dead-code"** — unused exports, unreachable code
-- **"deps"** — dependency health, version mismatches, vulnerabilities
-- **"all"** or no argument — full audit across all dimensions
-- Optional file/directory path to scope the audit
+### 2. Load context
+- `.ccs/architecture.md` → system overview
+- `.ccs/file-index.md` → prioritize S/A-rank files first
+- `.ccs/conventions.md` → expected patterns
 
-### Step 2: Load Context
-1. Read `.ccs/architecture.md` for system overview
-2. Read `.ccs/file-index.md` to prioritize (S-rank and A-rank first)
-3. Read `.ccs/conventions.md` to understand expected patterns
+### 3. Security audit
+Grep for: SQL injection (`query(.*$`), command injection (`exec(`, `spawn(`, `eval(`), XSS (`innerHTML`, `dangerouslySetInnerHTML`), hardcoded secrets (`password\s*=\s*["']`, `api_key`), path traversal, CORS wildcards, unvalidated input. Confirm each finding by reading the file.
 
-### Step 3: Security Audit
-Grep for known vulnerability patterns:
+### 4. Performance audit
+Grep for: N+1 queries (DB calls in loops), blocking I/O (`readFileSync` in handlers), memory leaks (listeners without cleanup), large bundle imports (`import _ from 'lodash'`), missing memoization, unoptimized queries (`SELECT *`).
 
-| Pattern | Risk | Grep Query |
-|---------|------|-----------|
-| SQL Injection | Critical | `query\(.*\$\|.*\+.*\)`, raw SQL with string concat |
-| Command Injection | Critical | `exec\(`, `spawn\(`, `system\(`, `eval\(` |
-| XSS | High | `innerHTML`, `dangerouslySetInnerHTML`, `document.write` |
-| Hardcoded Secrets | High | `password\s*=\s*["']`, `secret\s*=\s*["']`, `api_key\s*=` |
-| Path Traversal | High | `\.\.\/`, `path.join.*req\.(params\|query\|body)` |
-| Insecure Auth | Medium | Missing auth middleware on route handlers |
-| CORS Issues | Medium | `origin: ['*']`, `Access-Control-Allow-Origin: *` |
-| Unvalidated Input | Medium | Request params used directly without validation |
+### 5. Pattern audit
+Check for: mixed naming conventions, inconsistent error handling, mixed import styles, mixed async patterns, code duplication (similar 10+ line blocks).
 
-For each finding, read the file to confirm it's a real issue (not a false positive).
+### 6. Accessibility audit (UI codebases only)
+Grep for: `<img` without `alt`, buttons without accessible text, `onClick` without `onKeyDown`, missing form labels, missing `role` attributes.
 
-### Step 4: Performance Audit
-Grep for performance anti-patterns:
+### 7. Dead code detection
+For each exported symbol in file-index → Grep for usage. If never imported → flag as potentially dead. Check for unreachable code, unused variables/imports, commented-out blocks.
 
-| Pattern | Impact | What to Look For |
-|---------|--------|-----------------|
-| N+1 Queries | High | DB calls inside loops, `.map(async` with DB queries |
-| Blocking I/O | High | `readFileSync`, `writeFileSync` in request handlers |
-| Memory Leaks | High | Event listeners without cleanup, intervals without clear |
-| Large Bundle | Medium | Whole-library imports (`import _ from 'lodash'`) |
-| Re-renders | Medium | Missing React.memo, inline object/function props |
-| Missing Cache | Medium | Repeated expensive computations without memoization |
-| Unoptimized Queries | Medium | `SELECT *`, missing WHERE clauses, no LIMIT |
+### 8. Dependency audit
+Read package manager files. Check for outdated versions, known vulnerabilities (`npm audit` / `pip-audit`), duplicates, missing peer deps, unused deps. WebSearch for deprecation notices.
 
-### Step 5: Pattern Audit
-Check for consistency:
-- Mixed naming conventions (camelCase + snake_case)
-- Different error handling styles in similar code
-- Inconsistent import styles (default vs named, relative vs absolute)
-- Mixed async patterns (callbacks + promises + async/await)
-- Code duplication (similar 10+ line blocks in multiple files)
+### 9. Generate report
+Output severity-ranked findings (Critical/High/Medium/Low/Info) with file, line, category, description, and suggested fix. Provide prioritized action items.
 
-### Step 6: Accessibility Audit (UI codebases only)
-Grep for a11y issues:
-- `<img` without `alt` attribute
-- `<button` or `<a` without accessible text
-- Click handlers without keyboard equivalents (`onClick` without `onKeyDown`)
-- Missing form labels
-- Hardcoded color values without contrast consideration
-- Missing `role` attributes on custom interactive elements
+### 10. Log to `.ccs/task.md`
+Append using template at `.claude/skills/_ccs/templates/task-template.md`: findings count by severity, top action items.
 
-### Step 7: Dead Code Detection
-1. For each exported symbol in file-index, grep for its usage
-2. If an export is never imported elsewhere → flag as potentially dead
-3. Check for unreachable code (return statements before code)
-4. Check for unused variables/imports
-5. Check for commented-out code blocks
+## Rules
+- S/A-rank files first — they have the highest blast radius
+- Confirm each finding by reading the file (reduce false positives)
+- For large codebases, scope to changed files or specific directories
 
-### Step 8: Dependency Audit
-1. Read `package.json` / `requirements.txt` / `go.mod` etc.
-2. Check for:
-   - Outdated major versions (WebSearch for latest versions)
-   - Known vulnerabilities (run `npm audit` / `pip-audit` / etc.)
-   - Duplicate dependencies (same thing from different packages)
-   - Missing peer dependencies
-   - Unused dependencies (installed but never imported)
-3. Use WebSearch to check for deprecation notices
-
-### Step 9: Generate Audit Report
-```markdown
-# Audit Report
-
-**Scope:** {dimensions audited}
-**Files scanned:** {count}
-**Timestamp:** {now}
-
-## Summary
-| Severity | Count |
-|----------|-------|
-| Critical | {count} |
-| High | {count} |
-| Medium | {count} |
-| Low | {count} |
-| Info | {count} |
-
-## Critical Findings
-### {finding_title}
-- **File:** {file}:{line}
-- **Severity:** Critical
-- **Category:** {security/performance/etc}
-- **Description:** {description}
-- **Fix:** {suggested fix}
-
-## High Findings
-...
-
-## Recommendations
-1. {prioritized action item}
-2. {prioritized action item}
-```
-
-### Step 10: Track in Task Log
-Log the full audit in `.ccs/task.md` with findings count and top action items.
-
-## Examples
-```bash
-/ccs:audit                      # Full audit
-/ccs:audit security             # Security only
-/ccs:audit performance src/api  # Performance audit on API directory
-/ccs:audit deps                 # Dependency health check
-/ccs:audit dead-code            # Find unused code
-/ccs:audit a11y                 # Accessibility audit
-```
-
-## Limitations
-- Cannot detect runtime-only vulnerabilities
-- Dead code detection may have false positives (dynamically referenced code)
-- Dependency vulnerability data depends on web search accuracy
-- Accessibility audit covers common patterns, not WCAG 2.1 AA compliance
+## Refs
+- File index: `.ccs/file-index.md`
+- Conventions: `.ccs/conventions.md`
+- Task template: `.claude/skills/_ccs/templates/task-template.md`
+- Strategy: `.claude/skills/_ccs/references/context-strategies.md`
 
 ---
-*Built by [Anit Chaudhary](https://github.com/AnitChaudhry) — codebase-context-skill v1.0.0*
+*codebase-context-skill v1.0.0*

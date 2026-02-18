@@ -1,126 +1,79 @@
 ---
 name: init
-description: "Deep-research the codebase and generate context files (project-map, architecture, file-index, conventions) in .ccs/ directory"
+description: "Deep-research the codebase and generate .ccs/ context files"
+argument-hint: "[--rebuild]"
 user-invocable: true
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, AskUserQuestion, Task
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Task, EnterPlanMode
 model: claude-opus-4-6
 context: fork
 agent: general-purpose
 ---
 
-# Initialize Codebase Context
+# Init
 
-## Overview
-Performs a deep analysis of the entire codebase and generates local reference files in `.ccs/` that power all other commands. This is the foundation — run it once per project, then use `/ccs:refresh` to keep it current.
+Deep-analyze the codebase and generate all context files in `.ccs/`.
 
-## When to Use
-- First time using codebase-context-skill in a project
-- After major codebase restructuring
-- When context files are missing or corrupted
-- After cloning a new repository
+## Steps
 
-## Instructions
+### 1. Check existing context
+Glob for `.ccs/*`. If exists, ask user: rebuild or incremental? If incremental, delegate to `/ccs-refresh`.
 
-### Step 1: Check Existing Context
-1. Check if `.ccs/` directory exists with `Glob("**/.ccs/*")`
-2. If exists, ask user: "Context files already exist. Rebuild from scratch or incremental update?"
-3. If rebuilding, proceed. If incremental, delegate to `/ccs:refresh` logic.
+### 2. Ask preferences (first run only)
+If `.ccs/preferences.json` missing, ask refresh mode (on-demand / incremental / session-based). Save to `.ccs/preferences.json`.
 
-### Step 2: Ask Preferences (first run only)
-If `.ccs/preferences.json` does not exist, ask user:
-1. **Refresh mode**: on-demand / incremental / session-based
-2. Save to `.ccs/preferences.json`
+### 3. Discovery
+- Glob `**/*` excluding `node_modules/`, `dist/`, `build/`, `.next/`, `__pycache__/`, `.git/`, `coverage/`, `.cache/`, `*.lock`, `*.min.*`, `.ccs/`
+- Count files by extension and directories
+- Read package manager files: `package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`, `pom.xml`, `Gemfile`, `requirements.txt`
+- Read config files: `tsconfig.json`, `.eslintrc*`, `.prettierrc*`, `jest.config*`, `vitest.config*`, `webpack.config*`, `vite.config*`, `next.config*`
 
-### Step 3: Discovery Phase
-1. Run `Glob("**/*")` excluding: `node_modules/`, `dist/`, `build/`, `.next/`, `__pycache__/`, `.git/`, `coverage/`, `.cache/`, `*.lock`, `*.min.*`, `.ccs/`
-2. Count files by extension, total directories
-3. Read package manager files: `package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`, `pom.xml`, `Gemfile`, `requirements.txt`
-4. Read config files: `tsconfig.json`, `.eslintrc*`, `.prettierrc*`, `jest.config*`, `vitest.config*`, `webpack.config*`, `vite.config*`, `next.config*`
+### 4. Structural analysis
+For each source file (JS, TS, JSX, TSX, PY, GO, RS, JAVA, RB, PHP):
+- Read first 50 lines for imports/exports
+- Classify role: entry-point, component, page, util, helper, config, test, type, style, middleware, service, controller, model, hook, context, store, api, schema
+- Record import/export relationships
 
-### Step 4: Structural Analysis
-For each source file (JS, TS, JSX, TSX, PY, GO, RS, JAVA, RB, PHP — limit to source code only):
-1. Read the first 50 lines to extract imports and exports
-2. Classify the file role: entry-point, component, page, util, helper, config, test, type, style, middleware, service, controller, model, hook, context, store, api, schema
-3. Record import/export relationships
+### 5. Dependency graph
+- Build `file -> [imports]` and `file -> [imported-by]` maps
+- Rank by import count: S (10+), A (5-9), B (2-4), C (1), D (0)
 
-### Step 5: Dependency Graph
-1. Build a map: `file -> [files it imports]` and `file -> [files that import it]`
-2. Rank each file by import count (how many files import it)
-3. Assign ranks: S (imported by 10+), A (5-9), B (2-4), C (1), D (0)
+### 6. Pattern recognition
+- Detect architecture pattern from directory structure
+- Detect naming conventions (sample 10 files, 10 variables)
+- Detect test patterns, import/export style, error handling patterns
 
-### Step 6: Pattern Recognition
-1. Detect architecture pattern from directory structure and file organization
-2. Detect naming conventions by sampling 10 file names and 10 variable names
-3. Detect test patterns from test files
-4. Detect import/export style from source files
-5. Detect error handling patterns via Grep for try/catch, .catch, Result, Error
+### 7. Generate context files
+Using templates at `.claude/skills/_ccs/templates/`:
+- `.ccs/project-map.md` — file tree + dependency graph
+- `.ccs/architecture.md` — tech stack, patterns, data flow
+- `.ccs/file-index.md` — ranked file index with symbols
+- `.ccs/conventions.md` — all detected patterns
+- `.ccs/task.md` — empty task log (session header only)
+- `.ccs/preferences.json` — user preferences
 
-### Step 7: Generate Context Files
-Using the templates in `templates/`, generate:
-1. `.ccs/project-map.md` — file tree + dependency graph
-2. `.ccs/architecture.md` — tech stack, patterns, data flow
-3. `.ccs/file-index.md` — ranked file index with symbols
-4. `.ccs/conventions.md` — all detected patterns
-5. `.ccs/task.md` — empty task log (session start header only)
-6. `.ccs/preferences.json` — user preferences
-
-### Step 8: Configure MCP Server
-1. Check if `.mcp.json` exists in the project root
-2. If it exists, read it and check if a `ccs` entry already exists under `mcpServers`
-3. If `ccs` entry exists, skip — already configured
-4. If `.mcp.json` exists but has no `ccs` entry, merge the CCS config into the existing file:
+### 8. Configure MCP server
+1. Check if `.mcp.json` exists in project root
+2. If `ccs` entry already exists under `mcpServers` → skip
+3. If `.mcp.json` exists but no `ccs` entry → merge into existing:
    ```json
-   {
-     "mcpServers": {
-       ...existing_servers,
-       "ccs": {
-         "type": "http",
-         "url": "https://contextcode.thinqmesh.com/api/mcp"
-       }
-     }
-   }
+   { "mcpServers": { ...existing, "ccs": { "type": "http", "url": "https://contextcode.thinqmesh.com/api/mcp" } } }
    ```
-5. If `.mcp.json` does not exist, create it with just the CCS entry:
-   ```json
-   {
-     "mcpServers": {
-       "ccs": {
-         "type": "http",
-         "url": "https://contextcode.thinqmesh.com/api/mcp"
-       }
-     }
-   }
-   ```
-6. **IMPORTANT:** Never overwrite or remove existing MCP server entries — only add/update the `ccs` entry
+4. If `.mcp.json` missing → create with just the `ccs` entry
+5. **NEVER overwrite or remove existing MCP server entries**
 
-### Step 9: Report
-Output a summary:
-```
-Codebase Context Initialized
-├── Files indexed: {count}
-├── Directories: {count}
-├── Tech stack: {stack}
-├── Architecture: {pattern}
-├── S-rank files: {count}
-├── A-rank files: {count}
-├── Test files: {count}
-├── Context files generated in .ccs/
-├── MCP server: {configured/already configured/merged}
-└── Refresh mode: {mode}
-```
+### 9. Report
+Output summary: files indexed, directories, tech stack, architecture, S/A-rank counts, test files, MCP status, refresh mode.
 
-## Token Efficiency Rules
-- Use Glob results to decide what to read — never read blindly
-- Read file headers (first 50 lines) instead of full files during indexing
-- Process files in parallel batches of 5-10
+## Rules
+- Read file headers (first 50 lines) not full files during indexing
 - Skip binary files, images, fonts, lock files, minified files
 - Total context files should be under 3000 lines combined
+- Use Glob results to decide what to read — never read blindly
 
-## Limitations
-- Does not perform semantic analysis (no embeddings or vector search)
-- Import detection is regex-based, not AST-based
-- May miss dynamic imports or runtime dependencies
-- Large monorepos (10,000+ files) may need scoped initialization
+## Refs
+- Templates: `.claude/skills/_ccs/templates/`
+- Strategy: `.claude/skills/_ccs/references/context-strategies.md`
+- Task log: `.ccs/task.md`
 
 ---
-*Built by [Anit Chaudhary](https://github.com/AnitChaudhry) — codebase-context-skill v1.0.0*
+*codebase-context-skill v1.0.0*

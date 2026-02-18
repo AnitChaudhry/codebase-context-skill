@@ -61,11 +61,38 @@ Copy the `skills/` directory into your project's `.claude/skills/` directory.
 |---------|-------------|
 | `/ccs:research [query]` | Search official docs, resolve errors, check deps, find best practices |
 
+### Setup
+| Command | Description |
+|---------|-------------|
+| `/ccs:connect` | Set up MCP server — creates/updates .mcp.json, configures endpoint, verifies connection |
+
 ### Operations
 | Command | Description |
 |---------|-------------|
 | `/ccs:deploy` | Pre-deployment checklist — tests, build, env vars, dependencies, breaking changes |
 | `/ccs:track` | View/manage session task log, see all changes made this session |
+
+## MCP Server Connection
+
+After installing, run `/ccs:connect` to set up the MCP tools endpoint. This creates or updates `.mcp.json` in your project root:
+
+```json
+{
+  "mcpServers": {
+    "ccs": {
+      "type": "http",
+      "url": "https://contextcode.thinqmesh.com/api/mcp"
+    }
+  }
+}
+```
+
+Or use the CLI one-liner:
+```bash
+claude mcp add --transport http ccs https://contextcode.thinqmesh.com/api/mcp
+```
+
+This gives Claude Code access to 6 tools: skill info, command docs, install commands, model strategy, and context file details. If you already have `.mcp.json` with other servers, `/ccs:connect` merges safely without overwriting.
 
 ## How It Works
 

@@ -117,4 +117,4 @@ Log review in `.ccs/task.md` with findings count and outcome.
 - Does not replace human review for business logic validation
 
 ---
-*Built by [Anit Chaudhary](https://github.com/anitc98) — codebase-context-skill v1.0.0*
+*Built by [Anit Chaudhary](https://github.com/AnitChaudhry) — codebase-context-skill v1.0.0*

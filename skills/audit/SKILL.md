@@ -156,4 +156,4 @@ Log the full audit in `.ccs/task.md` with findings count and top action items.
 - Accessibility audit covers common patterns, not WCAG 2.1 AA compliance
 
 ---
-*Built by [Anit Chaudhary](https://github.com/anitc98) — codebase-context-skill v1.0.0*
+*Built by [Anit Chaudhary](https://github.com/AnitChaudhry) — codebase-context-skill v1.0.0*

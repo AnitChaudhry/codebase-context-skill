@@ -112,4 +112,4 @@ Output the plan in a readable format and ask for confirmation before proceeding.
 - Large tasks may need to be broken into sub-tasks
 
 ---
-*Built by [Anit Chaudhary](https://github.com/anitc98) — codebase-context-skill v1.0.0*
+*Built by [Anit Chaudhary](https://github.com/AnitChaudhry) — codebase-context-skill v1.0.0*

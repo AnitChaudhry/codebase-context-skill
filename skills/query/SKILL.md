@@ -70,4 +70,4 @@ Savings: ~{percentage}%
 - Cannot predict runtime/dynamic dependencies
 
 ---
-*Built by [Anit Chaudhary](https://github.com/anitc98) — codebase-context-skill v1.0.0*
+*Built by [Anit Chaudhary](https://github.com/AnitChaudhry) — codebase-context-skill v1.0.0*

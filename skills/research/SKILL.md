@@ -214,4 +214,4 @@ Every research result is logged in `.ccs/task.md`:
 - Community solutions should be verified against official docs
 
 ---
-*Built by [Anit Chaudhary](https://github.com/anitc98) — codebase-context-skill v1.0.0*
+*Built by [Anit Chaudhary](https://github.com/AnitChaudhry) — codebase-context-skill v1.0.0*

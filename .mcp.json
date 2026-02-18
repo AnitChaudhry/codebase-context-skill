@@ -1,8 +1,8 @@
 {
   "mcpServers": {
-    "webmcp": {
-      "command": "npx",
-      "args": ["-y", "@jason.today/webmcp@latest", "--mcp"]
+    "ccs": {
+      "type": "http",
+      "url": "https://contextcode.thinqmesh.com/api/mcp"
     }
   }
 }

@@ -32,6 +32,11 @@ Context engineering middleware for Claude Code. Builds intelligent, token-effici
 |---------|---------|
 | `/ccs:research` | Search official docs, resolve errors, check dependency health, find best practices |
 
+### Setup
+| Command | Purpose |
+|---------|---------|
+| `/ccs:connect` | Set up MCP server — creates/updates .mcp.json, configures remote tools endpoint, verifies connection |
+
 ### Operations
 | Command | Purpose |
 |---------|---------|

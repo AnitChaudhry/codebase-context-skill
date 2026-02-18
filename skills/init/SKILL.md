@@ -93,4 +93,4 @@ Codebase Context Initialized
 - Large monorepos (10,000+ files) may need scoped initialization
 
 ---
-*Built by [Anit Chaudhary](https://github.com/anitc98) — codebase-context-skill v1.0.0*
+*Built by [Anit Chaudhary](https://github.com/AnitChaudhry) — codebase-context-skill v1.0.0*

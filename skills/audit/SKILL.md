@@ -26,6 +26,16 @@ Parse `$ARGUMENTS`: `security`, `performance`, `patterns`, `a11y`, `dead-code`, 
 ### 3. Security audit
 Grep for: SQL injection (`query(.*$`), command injection (`exec(`, `spawn(`, `eval(`), XSS (`innerHTML`, `dangerouslySetInnerHTML`), hardcoded secrets (`password\s*=\s*["']`, `api_key`), path traversal, CORS wildcards, unvalidated input. Confirm each finding by reading the file.
 
+**Production-confirmed patterns (always flag):**
+- `innerHTML +=` → DOM re-parse, breaks observers/listeners. Use `insertAdjacentHTML`.
+- `fetch(` without `.catch(` or surrounding `try/catch` → silent network failures.
+- `navigator.clipboard` without `.catch(` → silent clipboard failures.
+- DB queries outside `try/catch` → crashes serverless functions.
+- Hardcoded email/role checks → use DB flags.
+- Tokens/secrets in committed files → must be in `.gitignore`.
+- Division without zero-guard → `Infinity` propagation.
+- `const`/`let` used before declaration → runtime `ReferenceError`.
+
 ### 4. Performance audit
 Grep for: N+1 queries (DB calls in loops), blocking I/O (`readFileSync` in handlers), memory leaks (listeners without cleanup), large bundle imports (`import _ from 'lodash'`), missing memoization, unoptimized queries (`SELECT *`).
 

@@ -37,6 +37,13 @@ For each file, check:
 - **Convention adherence:** naming, import style, error handling, file location
 - **Maintainability:** function size (<50 lines), nesting depth (<4), duplication, naming clarity
 - **Tests:** exist for new/changed logic, cover happy path + edge cases
+- **Production patterns** (auto-flag — see `references/guardrails.md` § Production Code Guardrails):
+  - `innerHTML +=` → use `insertAdjacentHTML`
+  - `fetch()` without `.catch()` → add error handler
+  - DB calls outside `try/catch` → wrap or move inside
+  - Hardcoded auth checks → use DB flag
+  - Division without zero-guard → add `denominator > 0`
+  - `const`/`let` before declaration → reorder or use `var`
 
 ### 4. Generate review
 Output for each finding: file, line, severity (blocker/issue/suggestion/nitpick), current code, suggested code, reason. End with overall assessment: approve / approve with suggestions / request changes.

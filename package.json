@@ -35,7 +35,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/AnitChaudhry/codebase-context-skill.git"
+    "url": "git+https://github.com/AnitChaudhry/codebase-context-skill.git"
   },
   "homepage": "https://contextcode.thinqmesh.com",
   "bugs": {

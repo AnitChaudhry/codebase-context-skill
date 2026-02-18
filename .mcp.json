@@ -2,7 +2,10 @@
   "mcpServers": {
     "ccs": {
       "type": "http",
-      "url": "https://contextcode.thinqmesh.com/api/mcp"
+      "url": "https://skills.thinqmesh.com/api/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_TOKEN_HERE"
+      }
     }
   }
 }

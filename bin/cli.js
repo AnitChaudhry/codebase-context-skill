@@ -244,7 +244,7 @@ function showHelp() {
   blank();
   log(`  ${GRAY}\u2502${R}      ${CYN}npx codebase-context-skill init${R}   Install into current project`);
   log(`  ${GRAY}\u2502${R}      ${CYN}npx codebase-context-skill help${R}   Show this help`);
-  log(`  ${GRAY}\u2502${R}      ${CYN}ccs init${R}                          Install (if globally installed)`);
+  log(`  ${GRAY}\u2502${R}      ${CYN}ccs init${R}                           Install (if globally installed)`);
   blank();
   log(`  ${GRAY}\u2502${R}   ${WHT}${B}What it does:${R}`);
   blank();

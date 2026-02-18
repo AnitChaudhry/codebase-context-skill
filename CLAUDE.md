@@ -76,8 +76,9 @@ Context engineering middleware for Claude Code. Builds intelligent, token-effici
 codebase-context-skill/
 ├── skills/          # All slash command definitions
 ├── agents/          # Subagent definitions
-├── references/      # Strategy docs and quality standards
-└── templates/       # MD templates for generated files
+├── references/      # Strategy docs, quality standards, and feature docs
+├── templates/       # MD templates for generated files
+└── hooks/           # Claude Code hooks (session orient, auto-commit, validate, capture)
 ```
 
 ## Principles
@@ -86,3 +87,45 @@ codebase-context-skill/
 3. **Everything persists locally** — MD files maintain context across the session
 4. **Token guardrails** — smaller models for scanning, larger for thinking
 5. **Commit-style tracking** — every change logged like a git commit locally
+6. **Session rhythm** — Orient → Work → Persist cycle prevents context loss
+7. **Processing pipeline** — Capture → Process → Connect → Verify for knowledge work
+8. **Graph compounds quality** — well-connected notes are worth more than many orphaned ones
+9. **Complexity at pain points** — activate features only when friction proves they're needed
+
+## Hooks System (`hooks/`)
+
+Automated lifecycle hooks for session management:
+
+| Hook | Trigger | What It Does |
+|------|---------|-------------|
+| `session-orient.sh` | SessionStart | Injects workspace tree, goals, conditions, maintenance signals |
+| `write-validate.sh` | PostToolUse (Write) | Validates YAML frontmatter on note files |
+| `auto-commit.sh` | PostToolUse (Write, async) | Auto-commits changes to git after writes |
+| `session-capture.sh` | Stop | Saves session state to ops/sessions/, commits artifacts |
+
+Hooks only activate in CCS-enabled projects (detected via `.ccs` marker).
+
+## Knowledge System Features (`references/`)
+
+| Reference | Purpose |
+|-----------|---------|
+| `session-rhythm.md` | Orient-Work-Persist cycle, handoff protocol, anti-patterns |
+| `processing-pipeline.md` | 4-phase pipeline: Capture → Process → Connect → Verify |
+| `graph-analysis.md` | Query vault as graph DB using ripgrep — traversal, synthesis, density |
+| `maintenance.md` | Condition-based health checks, reweaving, invariants |
+| `self-evolution.md` | Friction-driven module adoption, observation/tension capture, lifecycle |
+| `atomic-notes.md` | Prose-as-title pattern, composability test, schema |
+| `topic-maps.md` | Navigation hubs, lifecycle, health metrics |
+| `wiki-links.md` | Link philosophy, propositional semantics, dangling link policy |
+| `self-space.md` | Agent identity/memory separate from user knowledge |
+| `guardrails.md` | Privacy, transparency, autonomy — non-negotiable boundaries |
+
+## Agents (`agents/`)
+
+| Agent | Role |
+|-------|------|
+| `context-builder.md` | Deep codebase analysis, generates .ccs/ index files |
+| `test-runner.md` | Runs tests, tracks results, auto-fixes failures |
+| `code-auditor.md` | Security, performance, dead code, accessibility audits |
+| `git-tracker.md` | Git workflow — branches, PRs, merges, diffs, sync |
+| `knowledge-guide.md` | Proactive methodology guidance, note quality, connection suggestions |

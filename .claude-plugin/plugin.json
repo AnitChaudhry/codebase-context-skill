@@ -1,7 +1,7 @@
 {
   "name": "codebase-context-skill",
-  "description": "Context engineering middleware for Claude Code — intelligent codebase indexing, token-efficient file selection, local tracking, testing, auditing, and session persistence via MD files.",
-  "version": "1.0.0",
+  "description": "Context engineering middleware for Claude Code — intelligent codebase indexing, token-efficient file selection, local tracking, testing, auditing, and session persistence via MD files. Features: 22 slash commands, hooks system (session orientation, auto-commit, write validation, session capture), processing pipeline, graph analysis, self-evolution, atomic notes, topic maps, schema enforcement.",
+  "version": "2.0.0",
   "author": {
     "name": "Anit Chaudhary",
     "email": "anitc98@gmail.com",
@@ -17,6 +17,35 @@
     "agent-skill",
     "testing",
     "auditing",
-    "code-review"
+    "code-review",
+    "knowledge-management",
+    "session-rhythm",
+    "processing-pipeline",
+    "graph-analysis",
+    "self-evolution",
+    "hooks",
+    "atomic-notes",
+    "topic-maps"
+  ],
+  "hooks": "hooks/hooks.json",
+  "agents": [
+    "agents/context-builder.md",
+    "agents/test-runner.md",
+    "agents/code-auditor.md",
+    "agents/git-tracker.md",
+    "agents/knowledge-guide.md"
+  ],
+  "features": [
+    "session-rhythm",
+    "processing-pipeline",
+    "graph-analysis",
+    "self-evolution",
+    "maintenance",
+    "atomic-notes",
+    "topic-maps",
+    "wiki-links",
+    "self-space",
+    "schema",
+    "guardrails"
   ]
 }

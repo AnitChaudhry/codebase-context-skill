@@ -1,0 +1,47 @@
+{
+  "name": "codebase-context-skill",
+  "version": "1.0.0",
+  "description": "Context engineering middleware for Claude Code — intelligent codebase indexing, token-efficient file selection, local tracking, testing, auditing, and session persistence via MD files.",
+  "bin": {
+    "codebase-context-skill": "./bin/cli.js",
+    "ccs": "./bin/cli.js"
+  },
+  "files": [
+    "bin/",
+    "skills/",
+    "agents/",
+    "templates/",
+    "references/",
+    ".mcp.json",
+    "CLAUDE.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "claude-code",
+    "context-engineering",
+    "codebase-indexing",
+    "token-optimization",
+    "agent-skill",
+    "mcp",
+    "ai-coding",
+    "claude",
+    "anthropic"
+  ],
+  "author": {
+    "name": "Anit Chaudhary",
+    "url": "https://github.com/AnitChaudhry"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnitChaudhry/codebase-context-skill.git"
+  },
+  "homepage": "https://contextcode.thinqmesh.com",
+  "bugs": {
+    "url": "https://github.com/AnitChaudhry/codebase-context-skill/issues"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}

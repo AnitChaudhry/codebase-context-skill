@@ -7,7 +7,7 @@ site/
 # Node
 node_modules/
 dist/
-build/
+/build/
 
 # OS
 .DS_Store

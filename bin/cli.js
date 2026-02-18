@@ -9,19 +9,27 @@ const command = args[0];
 const PKG_DIR = path.resolve(__dirname, '..');
 const CWD = process.cwd();
 
-const COLORS = {
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  cyan: '\x1b[36m',
-  dim: '\x1b[2m',
-  reset: '\x1b[0m',
-  bold: '\x1b[1m'
-};
+// Terminal colors
+const R = '\x1b[0m';
+const B = '\x1b[1m';
+const D = '\x1b[2m';
+const I = '\x1b[3m';
+const GRN = '\x1b[32m';
+const YLW = '\x1b[33m';
+const CYN = '\x1b[36m';
+const MAG = '\x1b[35m';
+const WHT = '\x1b[97m';
+const BG_DARK = '\x1b[48;2;17;17;19m';
+const PURPLE = '\x1b[38;2;99;102;241m';
+const PINK = '\x1b[38;2;168;85;247m';
+const TEAL = '\x1b[38;2;6;182;212m';
+const GRAY = '\x1b[38;2;90;90;99m';
 
 function log(msg) { console.log(msg); }
-function success(msg) { log(`${COLORS.green}✓${COLORS.reset} ${msg}`); }
-function warn(msg) { log(`${COLORS.yellow}⚠${COLORS.reset} ${msg}`); }
-function info(msg) { log(`${COLORS.dim}  ${msg}${COLORS.reset}`); }
+function success(msg) { log(`  ${GRN}\u2502${R}  ${GRN}\u2713${R} ${msg}`); }
+function warn(msg) { log(`  ${YLW}\u2502${R}  ${YLW}\u26A0${R} ${msg}`); }
+function bar(msg) { log(`  ${GRAY}\u2502${R}  ${D}${msg}${R}`); }
+function blank() { log(`  ${GRAY}\u2502${R}`); }
 
 function copyDirRecursive(src, dest) {
   if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
@@ -44,70 +52,91 @@ function mergeMcpJson(destPath) {
   };
 
   let config = { mcpServers: {} };
+  let status = 'created';
 
   if (fs.existsSync(destPath)) {
     try {
       const existing = JSON.parse(fs.readFileSync(destPath, 'utf8'));
       if (existing.mcpServers) {
         config = existing;
+        status = 'merged';
       }
     } catch (e) {
-      warn('.mcp.json exists but is invalid JSON — recreating');
+      status = 'recreated';
     }
   }
 
   if (config.mcpServers.ccs) {
-    info('.mcp.json already has ccs entry — skipping');
-    return false;
+    return 'exists';
   }
 
   config.mcpServers.ccs = ccsEntry;
   fs.writeFileSync(destPath, JSON.stringify(config, null, 2) + '\n');
-  return true;
+  return status;
+}
+
+function header() {
+  log('');
+  log(`  ${GRAY}\u250C${''.padEnd(58, '\u2500')}\u2510${R}`);
+  log(`  ${GRAY}\u2502${R}                                                          ${GRAY}\u2502${R}`);
+  log(`  ${GRAY}\u2502${R}   ${PURPLE}${B}\u2588\u2588\u2588${R} ${PINK}${B}\u2588\u2588\u2588${R}  ${WHT}${B}codebase-context-skill${R}  ${D}v1.0.0${R}            ${GRAY}\u2502${R}`);
+  log(`  ${GRAY}\u2502${R}   ${PURPLE}\u2588${R} ${PINK}\u2588${R} ${PURPLE}\u2588${R}  ${D}Context engineering for Claude Code${R}       ${GRAY}\u2502${R}`);
+  log(`  ${GRAY}\u2502${R}   ${PURPLE}${B}\u2588\u2588\u2588${R} ${PINK}${B}\u2588\u2588\u2588${R}                                           ${GRAY}\u2502${R}`);
+  log(`  ${GRAY}\u2502${R}                                                          ${GRAY}\u2502${R}`);
+  log(`  ${GRAY}\u2502${R}   ${TEAL}Thinqmesh Technologies${R}                                ${GRAY}\u2502${R}`);
+  log(`  ${GRAY}\u2502${R}   ${GRAY}contextcode.thinqmesh.com${R}                              ${GRAY}\u2502${R}`);
+  log(`  ${GRAY}\u2502${R}                                                          ${GRAY}\u2502${R}`);
+  log(`  ${GRAY}\u251C${''.padEnd(58, '\u2500')}\u2524${R}`);
+}
+
+function footer() {
+  log(`  ${GRAY}\u2502${R}`);
+  log(`  ${GRAY}\u2514${''.padEnd(58, '\u2500')}\u2518${R}`);
+  log('');
 }
 
 function init() {
-  log('');
-  log(`${COLORS.bold}codebase-context-skill${COLORS.reset} v1.0.0`);
-  log(`${COLORS.dim}Context engineering middleware for Claude Code${COLORS.reset}`);
-  log('');
+  header();
+  blank();
 
   // 1. Copy skills
   const skillsSrc = path.join(PKG_DIR, 'skills');
   const skillsDest = path.join(CWD, '.claude', 'skills', 'ccs');
 
   if (fs.existsSync(skillsDest)) {
-    warn('Skills already installed at .claude/skills/ccs/ — overwriting');
+    warn('Existing install found \u2014 overwriting');
   }
 
   copyDirRecursive(skillsSrc, skillsDest);
-  success(`Installed 15 slash commands to .claude/skills/ccs/`);
+  success(`${B}15 slash commands${R} installed`);
 
   // 2. Copy agents
   const agentsSrc = path.join(PKG_DIR, 'agents');
   const agentsDest = path.join(CWD, '.claude', 'skills', 'ccs', 'agents');
   copyDirRecursive(agentsSrc, agentsDest);
-  success('Installed 3 agents');
+  success(`${B}3 agents${R} installed`);
 
   // 3. Copy templates
   const templatesSrc = path.join(PKG_DIR, 'templates');
   const templatesDest = path.join(CWD, '.claude', 'skills', 'ccs', 'templates');
   copyDirRecursive(templatesSrc, templatesDest);
-  success('Installed 5 templates');
+  success(`${B}5 templates${R} installed`);
 
   // 4. Copy references
   const refsSrc = path.join(PKG_DIR, 'references');
   const refsDest = path.join(CWD, '.claude', 'skills', 'ccs', 'references');
   copyDirRecursive(refsSrc, refsDest);
-  success('Installed 4 reference docs');
+  success(`${B}4 reference docs${R} installed`);
 
   // 5. Set up .mcp.json
   const mcpDest = path.join(CWD, '.mcp.json');
-  const merged = mergeMcpJson(mcpDest);
-  if (merged) {
-    success('Configured MCP server in .mcp.json');
+  const mcpStatus = mergeMcpJson(mcpDest);
+  if (mcpStatus === 'exists') {
+    success(`MCP server already configured`);
+  } else if (mcpStatus === 'merged') {
+    success(`MCP server ${B}merged${R} into existing .mcp.json`);
   } else {
-    success('MCP server already configured');
+    success(`MCP server ${B}configured${R} in .mcp.json`);
   }
 
   // 6. Check .gitignore for .ccs/
@@ -120,29 +149,47 @@ function init() {
     }
   }
 
-  // Done
-  log('');
-  log(`${COLORS.green}${COLORS.bold}Ready.${COLORS.reset} Run ${COLORS.cyan}/ccs:init${COLORS.reset} in Claude Code to index your codebase.`);
-  log('');
-  info('Commands: /ccs:init, /ccs:plan, /ccs:build, /ccs:fix, /ccs:test, /ccs:audit');
-  info('Docs:     https://contextcode.thinqmesh.com/docs.html');
-  info('GitHub:   https://github.com/AnitChaudhry/codebase-context-skill');
-  log('');
+  blank();
+  log(`  ${GRAY}\u251C${''.padEnd(58, '\u2500')}\u2524${R}`);
+  blank();
+  log(`  ${GRAY}\u2502${R}   ${GRN}${B}Ready.${R} Open Claude Code and run:`);
+  blank();
+  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs:init${R}    ${D}Index your codebase${R}`);
+  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs:plan${R}    ${D}Plan a task${R}`);
+  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs:build${R}   ${D}Build with context${R}`);
+  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs:test${R}    ${D}Run & fix tests${R}`);
+  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs:audit${R}   ${D}Security & quality audit${R}`);
+  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs:fix${R}     ${D}Debug with root-cause analysis${R}`);
+  blank();
+  bar(`Docs     ${R}${TEAL}https://contextcode.thinqmesh.com${R}`);
+  bar(`GitHub   ${R}${PURPLE}https://github.com/AnitChaudhry/codebase-context-skill${R}`);
+
+  footer();
 }
 
 function showHelp() {
-  log('');
-  log(`${COLORS.bold}codebase-context-skill${COLORS.reset} v1.0.0`);
-  log('');
-  log('Usage:');
-  log(`  ${COLORS.cyan}npx codebase-context-skill init${COLORS.reset}    Install skills + MCP config into current project`);
-  log(`  ${COLORS.cyan}npx codebase-context-skill help${COLORS.reset}    Show this help message`);
-  log('');
-  log('After installing, run /ccs:init in Claude Code to index your codebase.');
-  log('');
-  log(`Docs:   ${COLORS.dim}https://contextcode.thinqmesh.com${COLORS.reset}`);
-  log(`GitHub: ${COLORS.dim}https://github.com/AnitChaudhry/codebase-context-skill${COLORS.reset}`);
-  log('');
+  header();
+  blank();
+  log(`  ${GRAY}\u2502${R}   ${WHT}${B}Usage:${R}`);
+  blank();
+  log(`  ${GRAY}\u2502${R}      ${CYN}npx codebase-context-skill init${R}   Install into current project`);
+  log(`  ${GRAY}\u2502${R}      ${CYN}npx codebase-context-skill help${R}   Show this help`);
+  log(`  ${GRAY}\u2502${R}      ${CYN}ccs init${R}                          Install (if globally installed)`);
+  blank();
+  log(`  ${GRAY}\u2502${R}   ${WHT}${B}What it does:${R}`);
+  blank();
+  log(`  ${GRAY}\u2502${R}      Copies ${B}15 slash commands${R}, ${B}3 agents${R}, ${B}5 templates${R}, and`);
+  log(`  ${GRAY}\u2502${R}      ${B}4 reference docs${R} into ${CYN}.claude/skills/ccs/${R}`);
+  log(`  ${GRAY}\u2502${R}      Configures MCP server in ${CYN}.mcp.json${R}`);
+  blank();
+  log(`  ${GRAY}\u2502${R}   ${WHT}${B}After install:${R}`);
+  blank();
+  log(`  ${GRAY}\u2502${R}      Run ${CYN}${B}/ccs:init${R} in Claude Code to index your codebase.`);
+  blank();
+  bar(`Docs     ${R}${TEAL}https://contextcode.thinqmesh.com${R}`);
+  bar(`GitHub   ${R}${PURPLE}https://github.com/AnitChaudhry/codebase-context-skill${R}`);
+
+  footer();
 }
 
 // Main
@@ -153,6 +200,7 @@ if (command === 'init') {
 } else {
   if (command) {
     warn(`Unknown command: ${command}`);
+    log('');
   }
   showHelp();
 }

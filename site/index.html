@@ -346,6 +346,7 @@
       <span>ccs</span> codebase-context-skill
     </div>
     <div class="nav-links">
+      <a href="#install">Install</a>
       <a href="#commands">Commands</a>
       <a href="#how-it-works">How It Works</a>
       <a href="#models">Models</a>
@@ -371,7 +372,7 @@
   <div class="install-box mono">
     <span class="prompt">$</span>
     <code>npx codebase-context-skill init</code>
-    <button class="copy-btn" onclick="copyInstall()" title="Copy">
+    <button class="copy-btn" onclick="copyCmd(this, 'npx codebase-context-skill init')" title="Copy">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
     </button>
   </div>
@@ -379,6 +380,64 @@
     Also works with <code>bunx</code> <code>pnpm dlx</code> or <code>npm i -g</code>
   </div>
 </div>
+
+<!-- INSTALL SECTION -->
+<section id="install">
+  <div class="container">
+    <div class="section-label">Installation</div>
+    <h2 class="section-title">Works everywhere</h2>
+    <p class="section-desc">Install in your project or globally. One command on any OS.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-dots"><span></span><span></span><span></span></div>
+        <span>macOS / Linux</span>
+      </div>
+      <div class="code-body">
+        <span class="comment"># Project-level (recommended)</span><br>
+        <span class="prompt-char">$ </span><span class="cmd">npx</span> codebase-context-skill init<br><br>
+        <span class="comment"># With bun</span><br>
+        <span class="prompt-char">$ </span><span class="cmd">bunx</span> codebase-context-skill init<br><br>
+        <span class="comment"># With pnpm</span><br>
+        <span class="prompt-char">$ </span><span class="cmd">pnpm</span> dlx codebase-context-skill init<br><br>
+        <span class="comment"># Global install</span><br>
+        <span class="prompt-char">$ </span><span class="cmd">npm</span> install -g codebase-context-skill<br>
+        <span class="prompt-char">$ </span><span class="cmd">ccs</span> init
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-dots"><span></span><span></span><span></span></div>
+        <span>Windows (PowerShell / CMD / Git Bash)</span>
+      </div>
+      <div class="code-body">
+        <span class="comment"># Project-level (recommended)</span><br>
+        <span class="prompt-char">&gt; </span><span class="cmd">npx</span> codebase-context-skill init<br><br>
+        <span class="comment"># With bun</span><br>
+        <span class="prompt-char">&gt; </span><span class="cmd">bunx</span> codebase-context-skill init<br><br>
+        <span class="comment"># Global install</span><br>
+        <span class="prompt-char">&gt; </span><span class="cmd">npm</span> install -g codebase-context-skill<br>
+        <span class="prompt-char">&gt; </span><span class="cmd">ccs</span> init
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-dots"><span></span><span></span><span></span></div>
+        <span>Manual Install (any OS)</span>
+      </div>
+      <div class="code-body">
+        <span class="comment"># Clone and copy skills into your project</span><br>
+        <span class="prompt-char">$ </span><span class="cmd">git</span> clone https://github.com/AnitChaudhry/codebase-context-skill.git<br>
+        <span class="prompt-char">$ </span><span class="cmd">cp</span> -r codebase-context-skill/skills/ .claude/skills/ccs/<br><br>
+        <span class="comment"># Or use the WebMCP URL directly in Claude Code</span><br>
+        <span class="comment"># Just paste this URL and Claude will read the docs:</span><br>
+        <span class="string">https://ContextCode.thinqmesh.com</span>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- WHAT IT DOES -->
 <section id="features">
@@ -669,17 +728,45 @@
   </div>
 </section>
 
+<!-- WEBMCP -->
+<section id="webmcp">
+  <div class="container">
+    <div class="section-label">WebMCP Compatible</div>
+    <h2 class="section-title">Use directly in Claude Code</h2>
+    <p class="section-desc">Paste this URL in Claude Code to let it read the full documentation and install instructions automatically.</p>
+
+    <div class="install-box mono" style="display: flex;">
+      <span class="prompt">URL</span>
+      <code>https://ContextCode.thinqmesh.com</code>
+      <button class="copy-btn" onclick="copyCmd(this, 'https://ContextCode.thinqmesh.com')" title="Copy URL">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+      </button>
+    </div>
+    <p style="font-size: 13px; color: var(--text-muted); margin-top: 12px;">
+      Claude Code can use WebFetch to read this page, understand the skill, and help you install it. Just say: <em>"Read ContextCode.thinqmesh.com and install codebase-context-skill in my project"</em>
+    </p>
+  </div>
+</section>
+
 <!-- FOOTER -->
 <footer>
   <div class="container">
     <div class="footer-links">
       <a href="https://github.com/AnitChaudhry/codebase-context-skill">GitHub</a>
-      <a href="https://github.com/AnitChaudhry/codebase-context-skill#installation">Install</a>
+      <a href="#install">Install</a>
+      <a href="#commands">Commands</a>
       <a href="https://github.com/AnitChaudhry/codebase-context-skill/issues">Issues</a>
       <a href="https://github.com/AnitChaudhry/codebase-context-skill/blob/master/README.md">Docs</a>
+      <a href="https://www.linkedin.com/in/anit-choudhary-984994149/" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: -2px; margin-right: 4px;"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        LinkedIn
+      </a>
     </div>
+    <p style="margin-bottom: 8px;">
+      Developed by <a href="https://thinqmesh.com" style="color: var(--text-dim);">Thinqmesh Technologies</a>
+    </p>
     <p>
-      Built by <a href="https://github.com/AnitChaudhry">Anit Chaudhary</a> &middot;
+      <a href="https://github.com/AnitChaudhry">Anit Chaudhary</a> &middot;
       MIT License &middot;
       <a href="https://ContextCode.thinqmesh.com">ContextCode.thinqmesh.com</a>
     </p>
@@ -687,13 +774,11 @@
 </footer>
 
 <script>
-function copyInstall() {
-  navigator.clipboard.writeText('npx codebase-context-skill init');
-  const btn = document.querySelector('.copy-btn');
+function copyCmd(btn, text) {
+  navigator.clipboard.writeText(text);
+  const original = btn.innerHTML;
   btn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--green)" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>';
-  setTimeout(() => {
-    btn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
-  }, 2000);
+  setTimeout(() => { btn.innerHTML = original; }, 2000);
 }
 </script>
 

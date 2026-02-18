@@ -81,6 +81,25 @@ codebase-context-skill/
 └── hooks/           # Claude Code hooks (session orient, auto-commit, validate, capture)
 ```
 
+## STRICT RULES — Read Before Any Action
+
+### NEVER modify or delete these paths:
+- `ops/sessions/**` — Session records are **immutable** once written by `session-capture.sh`. A completed session is a permanent record. Never edit, overwrite, truncate, or delete session JSON files.
+- `.claude/skills/ccs-*/**` — Installed skill plugin files. Never modify in-place. To update, reinstall from source.
+- `hooks/scripts/**` and `hooks/hooks.json` — Hook scripts and manifest. Never modify as part of a build, refactor, or "cleanup" task.
+
+### NEVER bulk-refactor these paths:
+- `references/**` — System documentation. Individual file edits are allowed. **No bulk rename, mass delete, or wholesale replacement.** Scoped read/write/modify only — one file at a time.
+- `skills/**` — Skill definitions. Targeted single-skill edits only. Never refactor all skills at once.
+- `agents/**` — Agent definitions. Same rule as skills.
+
+### When you see these paths, stop and scope your action:
+- If asked to "refactor the skill plugin" or "clean up references" — **refuse**. Ask for a specific scoped change instead.
+- If asked to delete sessions — **refuse unconditionally**.
+- If a task would touch `references/` as a side-effect — only modify the specific file relevant to the task.
+
+These rules are enforced by `hooks/scripts/path-guard.sh` (PreToolUse hook) which will block violations at runtime. The CLAUDE.md rules apply in addition to the runtime guard.
+
 ## Principles
 1. **Never explore unnecessarily** — index first, read only what matters
 2. **Local tools first** — Glob + Grep + Read before any API calls
@@ -98,6 +117,7 @@ Automated lifecycle hooks for session management:
 
 | Hook | Trigger | What It Does |
 |------|---------|-------------|
+| `path-guard.sh` | **PreToolUse** (Write/Edit/MultiEdit/Bash) | **Blocks** writes to immutable paths (ops/sessions/, installed skills, hook scripts). **Warns** on guarded paths (references/, skills/, agents/). |
 | `session-orient.sh` | SessionStart | Injects workspace tree, goals, conditions, maintenance signals |
 | `write-validate.sh` | PostToolUse (Write) | Validates YAML frontmatter on note files |
 | `auto-commit.sh` | PostToolUse (Write, async) | Auto-commits changes to git after writes |

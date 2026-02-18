@@ -48,7 +48,10 @@ function copyDirRecursive(src, dest) {
 function mergeMcpJson(destPath) {
   const ccsEntry = {
     type: 'http',
-    url: 'https://contextcode.thinqmesh.com/api/mcp'
+    url: 'https://skills.thinqmesh.com/api/mcp',
+    headers: {
+      Authorization: 'Bearer YOUR_TOKEN_HERE'
+    }
   };
 
   let config = { mcpServers: {} };
@@ -199,8 +202,10 @@ function init() {
     success(`MCP server already configured`);
   } else if (mcpStatus === 'merged') {
     success(`MCP server ${B}merged${R} into existing .mcp.json`);
+    warn(`Replace YOUR_TOKEN_HERE in .mcp.json with your token from ${CYN}skills.thinqmesh.com/playground.html${R}`);
   } else {
     success(`MCP server ${B}configured${R} in .mcp.json`);
+    warn(`Replace YOUR_TOKEN_HERE in .mcp.json with your token from ${CYN}skills.thinqmesh.com/playground.html${R}`);
   }
 
   // 6. Check .gitignore for .ccs/

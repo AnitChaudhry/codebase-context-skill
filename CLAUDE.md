@@ -37,6 +37,17 @@ Context engineering middleware for Claude Code. Builds intelligent, token-effici
 |---------|---------|
 | `/ccs-connect` | Set up MCP server — creates/updates .mcp.json, configures remote tools endpoint, verifies connection |
 
+### Git Workflow
+| Command | Purpose |
+|---------|---------|
+| `/ccs-branch` | Create/switch branches with auto-generated context reference files |
+| `/ccs-pr` | Prepare PR with full context — title, summary, blast radius, review areas |
+| `/ccs-merge` | Merge with dependency checking — conflict prediction, resolution context |
+| `/ccs-diff` | Smart diff with impact analysis — dependency chains, blast radius, categorization |
+| `/ccs-sync` | Pull/rebase/push with conflict context and resolution recommendations |
+| `/ccs-stash` | Stash with tracked context — remembers what you were working on |
+| `/ccs-log` | Smart commit history — groups by branch, cross-references with task.md |
+
 ### Operations
 | Command | Purpose |
 |---------|---------|
@@ -44,9 +55,9 @@ Context engineering middleware for Claude Code. Builds intelligent, token-effici
 | `/ccs-track` | View/manage session task log, see all changes made this session |
 
 ## Model Strategy
-- **Haiku 4.5**: File scanning, index lookup, status checks, query preview, session tracking
-- **Sonnet 4.6**: Building features, fixing bugs, running tests (standard coding execution)
-- **Opus 4.6**: Initialization, planning, refactoring, auditing, code review, research, deployment (deep reasoning, architecture, complex analysis)
+- **Haiku 4.5**: File scanning, index lookup, status checks, query preview, session tracking, stash, log
+- **Sonnet 4.6**: Building features, fixing bugs, running tests, branch management, sync (standard coding execution)
+- **Opus 4.6**: Initialization, planning, refactoring, auditing, code review, research, deployment, PR preparation, merge analysis, diff impact analysis (deep reasoning, architecture, complex analysis)
 
 ## Context Files (generated in `.ccs/`)
 - `project-map.md` — File structure + dependency graph
@@ -55,6 +66,10 @@ Context engineering middleware for Claude Code. Builds intelligent, token-effici
 - `conventions.md` — Coding style, naming, testing patterns
 - `task.md` — Session task log with commit-style entries
 - `preferences.json` — User preferences (refresh mode, etc.)
+- `branches/<name>.md` — Per-branch reference: purpose, changed files, diffs, dependencies
+- `pulls/<name>.md` — PR documentation: summary, blast radius, review areas
+- `merge-history.md` — Append-only merge log with conflict resolutions
+- `commit-log.md` — Summarized commit history with task cross-references
 
 ## Key Directories
 ```

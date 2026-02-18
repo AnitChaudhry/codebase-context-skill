@@ -81,6 +81,49 @@ For each matched file from Pass 1+2:
 9. **Cache in task.md** — record what you learned so you don't re-read files
 10. **Use the architecture doc** — it tells you where to look without reading source code
 
+## Token Guardrails — Anti-Waste Rules
+
+### The Problem This Solves
+Without guardrails, Claude Code wastes 200K+ tokens per task:
+1. Spawns an Explore agent → reads 50+ files to "understand" the codebase
+2. Spawns a Plan agent → re-reads many of the same files
+3. Starts coding → reads files again because the previous context is gone
+4. Each agent is a separate context fork — nothing is shared
+
+### How CCS Eliminates This
+CCS maintains `.ccs/` reference files that replace all exploratory reading:
+- **`.ccs/file-index.md`** replaces "let me scan the codebase" (saves ~100K tokens)
+- **`.ccs/architecture.md`** replaces "let me understand the system" (saves ~50K tokens)
+- **`.ccs/project-map.md`** replaces "let me trace dependencies" (saves ~30K tokens)
+- **`.ccs/branches/<name>.md`** replaces "let me check what changed on this branch" (saves ~50K tokens)
+
+### Rules for All CCS Skills
+
+1. **NEVER spawn an Explore agent** — the index already exists. Read `.ccs/file-index.md` instead.
+2. **NEVER read a file "just to understand"** — read it only if you need to modify it or it directly answers the query.
+3. **NEVER read more than 15 files per command** — if you need more, the index is stale (run `/ccs-refresh`).
+4. **ALWAYS read the header first (50 lines)** — only read the full file if the header confirms relevance.
+5. **ALWAYS check `.ccs/task.md` first** — a previous task may have already gathered the context you need.
+6. **ALWAYS use Grep before Read** — find the exact line, then read only that section.
+7. **NEVER re-explore after switching branches** — read `.ccs/branches/<name>.md` instead.
+8. **Model selection is final** — Haiku skills never escalate to Sonnet. Sonnet skills never escalate to Opus. If more analysis is needed, the user runs a different skill.
+
+### Token Budget Per Skill Type
+| Skill Type | Max Files Read | Max Lines Read | Target Tokens |
+|-----------|---------------|----------------|---------------|
+| Status/Query/Track/Log/Stash | 3-5 | 500 | <5K |
+| Build/Fix/Test/Branch/Sync | 5-15 | 2000 | <20K |
+| Init/Plan/Refactor/Audit/Review/PR/Merge/Diff | 10-25 | 5000 | <50K |
+
+### What Replaces Agent Spawning
+| Without CCS | With CCS |
+|-------------|----------|
+| Spawn Explore agent (100K+ tokens) | Read `.ccs/file-index.md` (2K tokens) |
+| Spawn Plan agent (50K+ tokens) | Read `.ccs/architecture.md` + branch ref (3K tokens) |
+| Re-read files after branch switch | Read `.ccs/branches/<name>.md` (1K tokens) |
+| Full codebase scan for PR | Read branch ref + `git diff --stat` (2K tokens) |
+| Manual dependency tracing | Read `.ccs/project-map.md` (2K tokens) |
+
 ## Aider's Repo Map Approach (Reference)
 
 The most token-efficient codebase understanding technique:

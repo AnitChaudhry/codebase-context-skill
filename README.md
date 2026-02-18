@@ -83,6 +83,17 @@ If you already have a `.mcp.json`, merge the `ccs` entry manually (see [MCP Serv
 |---------|-------------|
 | `/ccs-connect` | Set up MCP server — creates/updates .mcp.json, configures endpoint, verifies connection |
 
+### Git Workflow
+| Command | Description |
+|---------|-------------|
+| `/ccs-branch` | Create/switch branches with auto-generated context reference files |
+| `/ccs-pr` | Prepare PR with full context — title, summary, blast radius, review areas |
+| `/ccs-merge` | Merge with dependency checking — conflict prediction, resolution context |
+| `/ccs-diff` | Smart diff with impact analysis — dependency chains, blast radius, categorization |
+| `/ccs-sync` | Pull/rebase/push with conflict context and resolution recommendations |
+| `/ccs-stash` | Stash with tracked context — remembers what you were working on |
+| `/ccs-log` | Smart commit history — groups by branch, cross-references with task.md |
+
 ### Operations
 | Command | Description |
 |---------|-------------|
@@ -104,7 +115,7 @@ The plugin ships with a `.mcp.json` that configures the CCS remote MCP server au
 }
 ```
 
-**What this gives you:** 6 MCP tools available to Claude Code — skill info, all 15 command docs, OS-specific install commands, model strategy, and context file details.
+**What this gives you:** 6 MCP tools available to Claude Code — skill info, all 22 command docs, OS-specific install commands, model strategy, and context file details.
 
 **If you already have a `.mcp.json`** with other MCP servers, run `/ccs-connect` — it merges the CCS entry safely without overwriting your existing servers.
 
@@ -146,9 +157,9 @@ Every action is logged in `.ccs/task.md` with git-commit-style entries:
 
 | Model | Used For | Commands |
 |-------|----------|----------|
-| Haiku 4.5 | Lightweight lookups, scanning, status checks | status, refresh, query, track |
-| Sonnet 4.6 | Standard coding execution | build, fix, test |
-| Opus 4.6 | Deep reasoning, architecture, complex analysis | init, plan, refactor, audit, review, research, deploy |
+| Haiku 4.5 | Lightweight lookups, scanning, status checks | status, refresh, query, track, stash, log |
+| Sonnet 4.6 | Standard coding execution | build, fix, test, branch, sync |
+| Opus 4.6 | Deep reasoning, architecture, complex analysis | init, plan, refactor, audit, review, research, deploy, pr, merge, diff |
 
 ## Generated Files
 

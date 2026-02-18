@@ -123,9 +123,32 @@ function installSkill(skillDir, skillsDest, sharedDir) {
   }
 }
 
+function checkGit() {
+  try {
+    require('child_process').execSync('git --version', { stdio: 'pipe' });
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 function init() {
   header();
   blank();
+
+  // 0. Check git is installed (required for git workflow skills)
+  if (!checkGit()) {
+    warn(`Git not found — git workflow skills require git`);
+    blank();
+    log(`  ${GRAY}\u2502${R}   Install git:`);
+    log(`  ${GRAY}\u2502${R}      ${CYN}Windows:${R}  winget install Git.Git`);
+    log(`  ${GRAY}\u2502${R}      ${CYN}macOS:${R}    xcode-select --install`);
+    log(`  ${GRAY}\u2502${R}      ${CYN}Ubuntu:${R}   sudo apt install git`);
+    log(`  ${GRAY}\u2502${R}      ${CYN}Fedora:${R}   sudo dnf install git`);
+    blank();
+  } else {
+    success('Git detected');
+  }
 
   // 1. Copy each skill directly into .claude/skills/ccs-<name>/
   //    Claude Code discovers skills at .claude/skills/<name>/SKILL.md (one level deep)
@@ -157,17 +180,17 @@ function init() {
   const agentsSrc = path.join(PKG_DIR, 'agents');
   const agentsDest = path.join(sharedDir, 'agents');
   copyDirRecursive(agentsSrc, agentsDest);
-  success(`${B}3 agents${R} installed`);
+  success(`${B}4 agents${R} installed`);
 
   const templatesSrc = path.join(PKG_DIR, 'templates');
   const templatesDest = path.join(sharedDir, 'templates');
   copyDirRecursive(templatesSrc, templatesDest);
-  success(`${B}5 templates${R} installed`);
+  success(`${B}8 templates${R} installed`);
 
   const refsSrc = path.join(PKG_DIR, 'references');
   const refsDest = path.join(sharedDir, 'references');
   copyDirRecursive(refsSrc, refsDest);
-  success(`${B}4 reference docs${R} installed`);
+  success(`${B}5 reference docs${R} installed`);
 
   // 5. Set up .mcp.json
   const mcpDest = path.join(CWD, '.mcp.json');
@@ -195,12 +218,13 @@ function init() {
   blank();
   log(`  ${GRAY}\u2502${R}   ${GRN}${B}Ready.${R} Open Claude Code and run:`);
   blank();
-  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-init${R}    ${D}Index your codebase${R}`);
-  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-plan${R}    ${D}Plan a task${R}`);
-  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-build${R}   ${D}Build with context${R}`);
-  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-test${R}    ${D}Run & fix tests${R}`);
-  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-audit${R}   ${D}Security & quality audit${R}`);
-  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-fix${R}     ${D}Debug with root-cause analysis${R}`);
+  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-init${R}     ${D}Index your codebase${R}`);
+  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-plan${R}     ${D}Plan a task${R}`);
+  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-build${R}    ${D}Build with context${R}`);
+  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-fix${R}      ${D}Debug with root-cause analysis${R}`);
+  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-branch${R}   ${D}Create/switch branches with context${R}`);
+  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-pr${R}       ${D}Prepare PR with blast radius${R}`);
+  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-merge${R}    ${D}Merge with dependency checking${R}`);
   blank();
   bar(`Docs     ${R}${TEAL}https://contextcode.thinqmesh.com${R}`);
   bar(`GitHub   ${R}${PURPLE}https://github.com/AnitChaudhry/codebase-context-skill${R}`);

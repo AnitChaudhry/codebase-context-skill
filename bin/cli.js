@@ -202,19 +202,28 @@ function init() {
     success(`MCP server already configured`);
   } else if (mcpStatus === 'merged') {
     success(`MCP server ${B}merged${R} into existing .mcp.json`);
-    warn(`Replace YOUR_TOKEN_HERE in .mcp.json with your token from ${CYN}skills.thinqmesh.com/playground.html${R}`);
+    warn(`Replace YOUR_TOKEN_HERE in .mcp.json — get your token at ${CYN}skills.thinqmesh.com/playground.html${R}`);
+    warn(`${YLW}Do not commit .mcp.json to git once your token is filled in${R}`);
   } else {
     success(`MCP server ${B}configured${R} in .mcp.json`);
-    warn(`Replace YOUR_TOKEN_HERE in .mcp.json with your token from ${CYN}skills.thinqmesh.com/playground.html${R}`);
+    warn(`Replace YOUR_TOKEN_HERE in .mcp.json — get your token at ${CYN}skills.thinqmesh.com/playground.html${R}`);
+    warn(`${YLW}Do not commit .mcp.json to git once your token is filled in${R}`);
   }
 
-  // 6. Check .gitignore for .ccs/
+  // 6. Update .gitignore — protect both .ccs/ and .mcp.json (contains token)
   const gitignorePath = path.join(CWD, '.gitignore');
   if (fs.existsSync(gitignorePath)) {
-    const gitignore = fs.readFileSync(gitignorePath, 'utf8');
-    if (!gitignore.includes('.ccs/')) {
-      fs.appendFileSync(gitignorePath, '\n# CCS context files (generated)\n.ccs/\n');
-      success('Added .ccs/ to .gitignore');
+    var gitignoreContent = fs.readFileSync(gitignorePath, 'utf8');
+    var gitignoreAppend = '';
+    if (!gitignoreContent.includes('.ccs/')) {
+      gitignoreAppend += '\n# CCS context files (generated)\n.ccs/\n';
+    }
+    if (mcpStatus !== 'exists' && !gitignoreContent.includes('.mcp.json')) {
+      gitignoreAppend += '# MCP config contains auth token — do not commit\n.mcp.json\n';
+    }
+    if (gitignoreAppend) {
+      fs.appendFileSync(gitignorePath, gitignoreAppend);
+      success('Updated .gitignore (.ccs/ and .mcp.json protected)');
     }
   }
 

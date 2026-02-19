@@ -210,7 +210,37 @@ function init() {
     warn(`${YLW}Do not commit .mcp.json to git once your token is filled in${R}`);
   }
 
-  // 6. Update .gitignore — protect both .ccs/ and .mcp.json (contains token)
+  // 6. Install statusline to ~/.claude/ (cross-platform)
+  const homeDir = require('os').homedir();
+  const claudeDir = path.join(homeDir, '.claude');
+  if (!fs.existsSync(claudeDir)) fs.mkdirSync(claudeDir, { recursive: true });
+
+  // Copy statusline script
+  const slSrc = path.join(PKG_DIR, 'bin', 'statusline.sh');
+  const slDest = path.join(claudeDir, 'statusline-command.sh');
+  if (fs.existsSync(slSrc)) {
+    fs.copyFileSync(slSrc, slDest);
+    success(`${B}Statusline${R} installed to ~/.claude/statusline-command.sh`);
+  }
+
+  // Merge statusline config into ~/.claude/settings.json
+  const settingsPath = path.join(claudeDir, 'settings.json');
+  let settings = {};
+  if (fs.existsSync(settingsPath)) {
+    try { settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8')); } catch (e) {}
+  }
+  if (!settings.statusLine) {
+    settings.statusLine = {
+      type: 'command',
+      command: 'bash ~/.claude/statusline-command.sh'
+    };
+    fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2) + '\n');
+    success(`${B}Statusline config${R} added to ~/.claude/settings.json`);
+  } else {
+    success(`Statusline already configured in ~/.claude/settings.json`);
+  }
+
+  // 7. Update .gitignore — protect both .ccs/ and .mcp.json (contains token)
   const gitignorePath = path.join(CWD, '.gitignore');
   if (fs.existsSync(gitignorePath)) {
     var gitignoreContent = fs.readFileSync(gitignorePath, 'utf8');

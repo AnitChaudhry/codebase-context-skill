@@ -65,6 +65,7 @@ If you already have a `.mcp.json`, merge the `ccs` entry manually (see [MCP Serv
 | `/ccs-build [task]` | Create/implement with tracked context and commit-style logging |
 | `/ccs-refactor [scope]` | Scope a refactor — identify all affected files and dependencies |
 | `/ccs-fix [issue]` | Fix bugs with dependency tracking, root-cause analysis, and verification |
+| `/ccs-team [task]` | Spawn an agent team for complex multi-part tasks |
 
 ### Testing & Quality
 | Command | Description |
@@ -115,7 +116,7 @@ The plugin ships with a `.mcp.json` that configures the CCS remote MCP server au
 }
 ```
 
-**What this gives you:** 6 MCP tools available to Claude Code — skill info, all 22 command docs, OS-specific install commands, model strategy, and context file details.
+**What this gives you:** 6 MCP tools available to Claude Code — skill info, all 23 command docs, OS-specific install commands, model strategy, and context file details.
 
 **If you already have a `.mcp.json`** with other MCP servers, run `/ccs-connect` — it merges the CCS entry safely without overwriting your existing servers.
 
@@ -159,7 +160,7 @@ Every action is logged in `.ccs/task.md` with git-commit-style entries:
 |-------|----------|----------|
 | Haiku 4.5 | Lightweight lookups, scanning, status checks | status, refresh, query, track, stash, log |
 | Sonnet 4.6 | Standard coding execution | build, fix, test, branch, sync |
-| Opus 4.6 | Deep reasoning, architecture, complex analysis | init, plan, refactor, audit, review, research, deploy, pr, merge, diff |
+| Opus 4.6 | Deep reasoning, architecture, complex analysis | init, plan, refactor, audit, review, research, deploy, pr, merge, diff, team |
 
 ## Generated Files
 
@@ -186,4 +187,4 @@ Set your preference on first init (saved in `.ccs/preferences.json`):
 MIT
 
 ---
-*Built by [Anit Chaudhary](https://github.com/AnitChaudhry) — codebase-context-skill v1.0.0*
+*Built by [Anit Chaudhary](https://github.com/AnitChaudhry) — codebase-context-skill v1.0.8*

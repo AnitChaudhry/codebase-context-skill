@@ -19,6 +19,7 @@ Context engineering middleware for Claude Code. Builds intelligent, token-effici
 | `/ccs-build` | Create/implement with tracked context and commit-style logging |
 | `/ccs-refactor` | Scope a refactor — identify all affected files and dependencies |
 | `/ccs-fix` | Fix bugs with dependency tracking, root-cause analysis, and verification |
+| `/ccs-team` | Spawn an agent team for complex multi-part tasks |
 
 ### Testing & Quality
 | Command | Purpose |
@@ -70,6 +71,7 @@ Context engineering middleware for Claude Code. Builds intelligent, token-effici
 - `pulls/<name>.md` — PR documentation: summary, blast radius, review areas
 - `merge-history.md` — Append-only merge log with conflict resolutions
 - `commit-log.md` — Summarized commit history with task cross-references
+- `team-board.md` — Multi-agent team task board with role assignments and integration log
 
 ## Key Directories
 ```
@@ -149,3 +151,4 @@ Hooks only activate in CCS-enabled projects (detected via `.ccs` marker).
 | `code-auditor.md` | Security, performance, dead code, accessibility audits |
 | `git-tracker.md` | Git workflow — branches, PRs, merges, diffs, sync |
 | `knowledge-guide.md` | Proactive methodology guidance, note quality, connection suggestions |
+| `team-lead.md` | Multi-agent team coordination, task decomposition, parallel dispatch |

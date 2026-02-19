@@ -151,9 +151,9 @@ function installSkillsAndResources(targetBase) {
   // Agents, templates, references
   if (!fs.existsSync(sharedDir)) fs.mkdirSync(sharedDir, { recursive: true });
   copyDirRecursive(path.join(PKG_DIR, 'agents'), path.join(sharedDir, 'agents'));
-  success(`${B}5 agents${R} installed`);
+  success(`${B}6 agents${R} installed`);
   copyDirRecursive(path.join(PKG_DIR, 'templates'), path.join(sharedDir, 'templates'));
-  success(`${B}8 templates${R} installed`);
+  success(`${B}9 templates${R} installed`);
   copyDirRecursive(path.join(PKG_DIR, 'references'), path.join(sharedDir, 'references'));
   success(`${B}15 reference docs${R} installed`);
 }

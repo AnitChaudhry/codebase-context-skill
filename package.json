@@ -12,6 +12,7 @@
     "agents/",
     "templates/",
     "references/",
+    ".mcp.json",
     "CLAUDE.md",
     "README.md",
     "LICENSE"

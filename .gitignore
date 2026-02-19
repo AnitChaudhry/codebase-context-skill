@@ -19,3 +19,9 @@ Thumbs.db
 
 # Claude Code local settings (user-specific permissions)
 .claude/settings.local.json
+
+# Statusline (separate repo: claude-code-statusline)
+Statusline/
+
+# Crash dumps
+*.stackdump

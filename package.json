@@ -12,8 +12,6 @@
     "agents/",
     "templates/",
     "references/",
-    "Statusline/",
-    ".mcp.json",
     "CLAUDE.md",
     "README.md",
     "LICENSE"

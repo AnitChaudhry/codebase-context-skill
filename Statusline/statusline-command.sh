@@ -154,27 +154,48 @@ if [ "$skill_label" = "Idle" ]; then
   if [ -n "$transcript" ]; then
     tpath=$(echo "$transcript" | sed 's|\\\\|/|g' | sed 's|\\|/|g')
     if [ -f "$tpath" ]; then
-      last_tool=$(tail -80 "$tpath" 2>/dev/null | grep -o '"type":"tool_use","name":"[^"]*"' | tail -1 | sed 's/.*"name":"\([^"]*\)".*/\1/')
-      if [ -n "$last_tool" ]; then
-        case "$last_tool" in
-          Read)       skill_label="Read" ;;
-          Write)      skill_label="Write" ;;
-          Edit)       skill_label="Edit" ;;
-          Glob)       skill_label="Search(Files)" ;;
-          Grep)       skill_label="Search(Content)" ;;
-          Bash)       skill_label="Terminal" ;;
-          WebSearch)  skill_label="Web Search" ;;
-          WebFetch)   skill_label="Web Fetch" ;;
-          Task)       skill_label="Task(Agent)" ;;
-          Skill)      skill_label="Skill" ;;
-          AskUserQuestion) skill_label="Asking..." ;;
-          EnterPlanMode)   skill_label="Planning" ;;
-          TaskCreate) skill_label="Task Create" ;;
-          TaskUpdate) skill_label="Task Update" ;;
-          TaskList)   skill_label="Task List" ;;
-          NotebookEdit) skill_label="Notebook" ;;
-          *)          skill_label="$last_tool" ;;
-        esac
+      # Check recent transcript for tool activity (last 200 lines for multi-agent blocks)
+      recent_block=$(tail -200 "$tpath" 2>/dev/null)
+
+      # Count recent Task (agent) launches — look for consecutive Task tool_use calls
+      agent_count=$(echo "$recent_block" | grep -c '"type":"tool_use","name":"Task"')
+
+      if [ "$agent_count" -gt 1 ]; then
+        # Multiple agents running — show count
+        skill_label="${agent_count} Agents"
+      elif [ "$agent_count" -eq 1 ]; then
+        # Single agent — try to get its description
+        agent_desc=$(echo "$recent_block" | grep -o '"description":"[^"]*"' | tail -1 | sed 's/"description":"//;s/"$//')
+        if [ -n "$agent_desc" ]; then
+          # Truncate to 20 chars
+          agent_desc=$(echo "$agent_desc" | cut -c1-20)
+          skill_label="Agent($agent_desc)"
+        else
+          skill_label="Agent"
+        fi
+      else
+        # No agents — get last tool used
+        last_tool=$(echo "$recent_block" | grep -o '"type":"tool_use","name":"[^"]*"' | tail -1 | sed 's/.*"name":"\([^"]*\)".*/\1/')
+        if [ -n "$last_tool" ]; then
+          case "$last_tool" in
+            Read)       skill_label="Read" ;;
+            Write)      skill_label="Write" ;;
+            Edit)       skill_label="Edit" ;;
+            Glob)       skill_label="Search(Files)" ;;
+            Grep)       skill_label="Search(Content)" ;;
+            Bash)       skill_label="Terminal" ;;
+            WebSearch)  skill_label="Web Search" ;;
+            WebFetch)   skill_label="Web Fetch" ;;
+            Skill)      skill_label="Skill" ;;
+            AskUserQuestion) skill_label="Asking..." ;;
+            EnterPlanMode)   skill_label="Planning" ;;
+            TaskCreate) skill_label="Task Create" ;;
+            TaskUpdate) skill_label="Task Update" ;;
+            TaskList)   skill_label="Task List" ;;
+            NotebookEdit) skill_label="Notebook" ;;
+            *)          skill_label="$last_tool" ;;
+          esac
+        fi
       fi
     fi
   fi

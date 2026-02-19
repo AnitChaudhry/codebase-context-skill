@@ -16,7 +16,7 @@ json_num() {
 }
 # Convert any path to forward slashes (safe on all OS)
 to_fwd() {
-  echo "$1" | tr '\\' '/'
+  echo "$1" | tr '\\' '/' | sed 's|//\+|/|g'
 }
 
 # Right-pad a colored string to a visible width

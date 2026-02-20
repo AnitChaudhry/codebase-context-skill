@@ -12,7 +12,7 @@ const isProjectOnly = flags.includes('--project') || flags.includes('-p');
 const PKG_DIR = path.resolve(__dirname, '..');
 const CWD = process.cwd();
 const HOME = os.homedir();
-const VERSION = '1.1.1';
+const VERSION = '1.1.2';
 
 // Terminal colors
 const R = '\x1b[0m';
@@ -192,11 +192,17 @@ function installStatusline() {
   if (fs.existsSync(settingsPath)) {
     try { settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8')); } catch (e) {}
   }
-  if (!settings.statusLine) {
-    settings.statusLine = {
-      type: 'command',
-      command: 'bash ~/.claude/statusline-command.sh'
-    };
+  if (!settings.statusLine || settings.statusLine.command === 'bash ~/.claude/statusline-command.sh') {
+    const isWin = process.platform === 'win32';
+    let cmd;
+    if (isWin) {
+      const gitBash = 'C:\\\\Program Files\\\\Git\\\\usr\\\\bin\\\\bash.exe';
+      const script = path.join(claudeDir, 'statusline-command.sh').replace(/\//g, '\\\\');
+      cmd = `"${gitBash}" "${script}"`;
+    } else {
+      cmd = 'bash ~/.claude/statusline-command.sh';
+    }
+    settings.statusLine = { type: 'command', command: cmd };
     fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2) + '\n');
     success(`${B}Statusline config${R} added to ~/.claude/settings.json`);
   } else {

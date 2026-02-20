@@ -4,6 +4,9 @@
 # Site (hosted separately in private repo)
 site/
 
+#npm Auth Token
+npm_recovery_codes.txt
+
 # Node
 node_modules/
 dist/
@@ -22,9 +25,6 @@ Thumbs.db
 
 # Local MCP config with real token (never publish)
 .mcp.local.json
-
-# Statusline (separate repo: claude-code-statusline)
-Statusline/
 
 # Crash dumps
 *.stackdump

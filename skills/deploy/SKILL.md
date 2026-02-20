@@ -1,6 +1,13 @@
 ---
 name: deploy
 description: "Pre-deployment checklist — tests, build, env vars, deps, breaking changes"
+category: ops
+tags: [deploy, checklist, env-vars, breaking-changes]
+depends-on: [init]
+input: "deployment target or scope"
+output: "deployment readiness report with blockers"
+token-estimate: 4000
+parallel-safe: false
 user-invocable: true
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Task, EnterPlanMode
 model: claude-opus-4-6

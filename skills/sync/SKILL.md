@@ -1,6 +1,13 @@
 ---
 name: sync
 description: "Pull, push, or rebase with conflict context and resolution guidance"
+category: git
+tags: [pull, push, rebase, conflict]
+depends-on: [init]
+input: "sync operation (pull, push, rebase)"
+output: "synced repo + conflict resolution if needed"
+token-estimate: 3000
+parallel-safe: false
 argument-hint: "[pull | push | rebase] [--force]"
 user-invocable: true
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Task, EnterPlanMode

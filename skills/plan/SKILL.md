@@ -1,6 +1,13 @@
 ---
 name: plan
 description: "Plan a task with full dependency-aware context"
+category: workflow
+tags: [plan, task, dependency]
+depends-on: [init]
+input: "task description"
+output: "structured plan with dependency graph and file targets"
+token-estimate: 4000
+parallel-safe: true
 argument-hint: "[task description]"
 user-invocable: true
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Task, EnterPlanMode

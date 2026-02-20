@@ -1,6 +1,13 @@
 ---
 name: audit
 description: "Audit code for security, performance, patterns, accessibility, dead code, and deps"
+category: quality
+tags: [security, performance, a11y, dead-code]
+depends-on: [init]
+input: "audit scope (file, directory, or category)"
+output: "audit report with findings by severity"
+token-estimate: 6000
+parallel-safe: true
 argument-hint: "[security | performance | patterns | a11y | dead-code | deps | all] [path]"
 user-invocable: true
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Task, EnterPlanMode

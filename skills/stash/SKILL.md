@@ -1,6 +1,13 @@
 ---
 name: stash
 description: "Stash and restore WIP with tracked context"
+category: git
+tags: [stash, wip, restore]
+depends-on: [init]
+input: "stash operation (save, list, pop, apply)"
+output: "stashed/restored state + context tracking"
+token-estimate: 1500
+parallel-safe: true
 argument-hint: "[save \"message\"] | [pop [index]] | [list] | [drop index]"
 user-invocable: true
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Task, EnterPlanMode

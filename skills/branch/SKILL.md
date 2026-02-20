@@ -1,6 +1,13 @@
 ---
 name: branch
 description: "Create or switch branches with auto-generated context refs"
+category: git
+tags: [branch, switch, context-ref]
+depends-on: [init]
+input: "branch name or operation"
+output: ".ccs/branches/<name>.md context reference"
+token-estimate: 2000
+parallel-safe: false
 argument-hint: "[create branch-name \"purpose\"] | [branch-name] | [list] | [clean]"
 user-invocable: true
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Task, EnterPlanMode

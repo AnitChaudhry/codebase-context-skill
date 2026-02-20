@@ -1,6 +1,13 @@
 ---
 name: status
 description: "Show indexed context state, staleness, and token savings"
+category: context
+tags: [check, health, staleness]
+depends-on: [init]
+input: ".ccs/ directory"
+output: "status report with staleness and token savings"
+token-estimate: 1000
+parallel-safe: true
 user-invocable: true
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Task, EnterPlanMode
 model: claude-haiku-4-5-20251001

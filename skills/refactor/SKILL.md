@@ -1,6 +1,13 @@
 ---
 name: refactor
 description: "Scope a refactor — identify all affected files and blast radius"
+category: workflow
+tags: [restructure, blast-radius]
+depends-on: [init]
+input: "refactor scope description"
+output: "blast radius analysis + refactored code + .ccs/task.md entry"
+token-estimate: 5000
+parallel-safe: false
 argument-hint: "[what to refactor and target approach]"
 user-invocable: true
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Task, EnterPlanMode

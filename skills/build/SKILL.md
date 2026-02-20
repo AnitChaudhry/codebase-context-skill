@@ -1,6 +1,13 @@
 ---
 name: build
 description: "Implement a feature with tracked context"
+category: workflow
+tags: [implement, create, feature]
+depends-on: [init, plan]
+input: "task/feature description"
+output: "implemented code + .ccs/task.md entry"
+token-estimate: 6000
+parallel-safe: false
 argument-hint: "[task description]"
 user-invocable: true
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Task, EnterPlanMode

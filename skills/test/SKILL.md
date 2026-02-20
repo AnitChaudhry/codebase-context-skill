@@ -1,6 +1,13 @@
 ---
 name: test
 description: "Run tests, diagnose failures, suggest or auto-fix"
+category: quality
+tags: [test, verify, auto-fix]
+depends-on: [init]
+input: "test scope (file, suite, or all)"
+output: "test results + failure analysis + auto-fix suggestions"
+token-estimate: 4000
+parallel-safe: true
 argument-hint: "[scope: all | file path | test name | --fix | --write file]"
 user-invocable: true
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Task, EnterPlanMode

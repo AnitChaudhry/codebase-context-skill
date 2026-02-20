@@ -1,6 +1,13 @@
 ---
 name: query
 description: "Preview which files would be selected for a given query"
+category: context
+tags: [search, preview, lookup]
+depends-on: [init]
+input: "natural language query"
+output: "ranked list of matching files with relevance"
+token-estimate: 1500
+parallel-safe: true
 argument-hint: "[your question or task description]"
 user-invocable: true
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Task, EnterPlanMode

@@ -12,7 +12,7 @@ const isProjectOnly = flags.includes('--project') || flags.includes('-p');
 const PKG_DIR = path.resolve(__dirname, '..');
 const CWD = process.cwd();
 const HOME = os.homedir();
-const VERSION = '1.0.9';
+const VERSION = '1.1.0';
 
 // Terminal colors
 const R = '\x1b[0m';

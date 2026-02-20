@@ -1,6 +1,13 @@
 ---
 name: diff
 description: "Smart diff with impact analysis — dependency chains and blast radius"
+category: git
+tags: [diff, impact, dependency-chain]
+depends-on: [init]
+input: "diff scope (file, branch, commit range)"
+output: "categorized diff with blast radius analysis"
+token-estimate: 3000
+parallel-safe: true
 argument-hint: "[branch1] [branch2]"
 user-invocable: true
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Task, EnterPlanMode

@@ -1,6 +1,13 @@
 ---
 name: connect
 description: "Set up MCP server — create/update .mcp.json and verify connection"
+category: setup
+tags: [mcp, server, endpoint, config]
+depends-on: []
+input: "MCP endpoint URL or default"
+output: ".mcp.json configuration + connection verification"
+token-estimate: 2000
+parallel-safe: false
 user-invocable: true
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Task, EnterPlanMode
 model: claude-sonnet-4-6

@@ -1,6 +1,13 @@
 ---
 name: log
 description: "Smart commit history with context and task.md cross-references"
+category: git
+tags: [history, commits, cross-ref]
+depends-on: [init]
+input: "log scope (branch, range, all)"
+output: "formatted commit history with task cross-references"
+token-estimate: 1500
+parallel-safe: true
 argument-hint: "[branch] [--all] [--since=7d]"
 user-invocable: true
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Task, EnterPlanMode

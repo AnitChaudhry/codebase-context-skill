@@ -1,6 +1,13 @@
 ---
 name: team
 description: "Spawn an agent team for complex multi-part tasks"
+category: workflow
+tags: [multi-agent, parallel, coordination, team-lead]
+depends-on: [init]
+input: "complex task description"
+output: ".ccs/team-board.md + coordinated multi-agent results"
+token-estimate: 8000
+parallel-safe: false
 argument-hint: "[task description]"
 user-invocable: true
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Task, EnterPlanMode

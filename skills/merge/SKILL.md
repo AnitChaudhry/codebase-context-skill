@@ -1,6 +1,13 @@
 ---
 name: merge
 description: "Merge branches with dependency checking and conflict context"
+category: git
+tags: [merge, conflict, resolution]
+depends-on: [init, branch]
+input: "source and target branches"
+output: "merged code + conflict resolution + .ccs/merge-history.md entry"
+token-estimate: 4000
+parallel-safe: false
 argument-hint: "[source-branch] [into target-branch]"
 user-invocable: true
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Task, EnterPlanMode

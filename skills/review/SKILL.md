@@ -1,6 +1,13 @@
 ---
 name: review
 description: "Code review with full codebase context"
+category: quality
+tags: [code-review, style, logic]
+depends-on: [init]
+input: "review scope (file, diff, or PR)"
+output: "review comments with severity and suggestions"
+token-estimate: 5000
+parallel-safe: true
 argument-hint: "[file path | directory | staged | changes | session]"
 user-invocable: true
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Task, EnterPlanMode

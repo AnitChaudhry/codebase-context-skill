@@ -1,6 +1,13 @@
 ---
 name: research
 description: "Search docs, resolve errors, check deps, find best practices — cached locally"
+category: quality
+tags: [docs, errors, best-practices]
+depends-on: []
+input: "research query or error message"
+output: "research findings cached locally"
+token-estimate: 3000
+parallel-safe: true
 argument-hint: "[error message | library name | deps | best-practices topic | breaking-changes pkg]"
 user-invocable: true
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Task, EnterPlanMode

@@ -1,6 +1,13 @@
 ---
 name: pr
 description: "Prepare a PR with context — summary, blast radius, review areas"
+category: git
+tags: [pull-request, summary, blast-radius]
+depends-on: [init, branch]
+input: "PR scope (current branch)"
+output: ".ccs/pulls/<name>.md + PR creation"
+token-estimate: 4000
+parallel-safe: true
 argument-hint: "[target-branch] [--draft]"
 user-invocable: true
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Task, EnterPlanMode

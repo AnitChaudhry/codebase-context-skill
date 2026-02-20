@@ -1,6 +1,13 @@
 ---
 name: fix
 description: "Fix bugs with root-cause analysis and dependency tracking"
+category: workflow
+tags: [debug, bugfix, root-cause]
+depends-on: [init]
+input: "bug description or error message"
+output: "fixed code + root-cause analysis + .ccs/task.md entry"
+token-estimate: 5000
+parallel-safe: false
 argument-hint: "[bug description or error message]"
 user-invocable: true
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Task, EnterPlanMode

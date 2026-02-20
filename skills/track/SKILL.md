@@ -1,6 +1,13 @@
 ---
 name: track
 description: "View/manage the session task log"
+category: ops
+tags: [session, task-log, changes]
+depends-on: []
+input: "optional filter (date, skill, status)"
+output: "formatted session task log"
+token-estimate: 1000
+parallel-safe: true
 argument-hint: "[summary | detail | clear | export | files | stats]"
 user-invocable: true
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Task, EnterPlanMode

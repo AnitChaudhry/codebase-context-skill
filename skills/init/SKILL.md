@@ -1,6 +1,13 @@
 ---
 name: init
 description: "Deep-research the codebase and generate .ccs/ context files"
+category: context
+tags: [index, scan, setup, architecture]
+depends-on: []
+input: "codebase root directory"
+output: ".ccs/ project-map, architecture, file-index, conventions"
+token-estimate: 8000
+parallel-safe: false
 argument-hint: "[--rebuild]"
 user-invocable: true
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Task, EnterPlanMode

@@ -1,6 +1,13 @@
 ---
 name: refresh
 description: "Rebuild codebase index (full, incremental, or session-based)"
+category: context
+tags: [rebuild, update, incremental]
+depends-on: [init]
+input: ".ccs/ directory + codebase changes"
+output: "updated .ccs/ index files"
+token-estimate: 5000
+parallel-safe: false
 argument-hint: "[full | incremental | session]"
 user-invocable: true
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Task, EnterPlanMode

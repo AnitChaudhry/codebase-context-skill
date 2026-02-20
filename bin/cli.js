@@ -12,7 +12,7 @@ const isProjectOnly = flags.includes('--project') || flags.includes('-p');
 const PKG_DIR = path.resolve(__dirname, '..');
 const CWD = process.cwd();
 const HOME = os.homedir();
-const VERSION = '1.1.0';
+const VERSION = '1.1.1';
 
 // Terminal colors
 const R = '\x1b[0m';
@@ -162,12 +162,28 @@ function installStatusline() {
   const claudeDir = path.join(HOME, '.claude');
   if (!fs.existsSync(claudeDir)) fs.mkdirSync(claudeDir, { recursive: true });
 
-  // Copy statusline script
+  // Copy entry point script
   const slSrc = path.join(PKG_DIR, 'bin', 'statusline.sh');
   const slDest = path.join(claudeDir, 'statusline-command.sh');
   if (fs.existsSync(slSrc)) {
     fs.copyFileSync(slSrc, slDest);
+  }
+
+  // Copy v2 engine (statusline/ directory with core, themes, layouts)
+  const slEngineSrc = path.join(PKG_DIR, 'statusline');
+  const slEngineDest = path.join(claudeDir, 'statusline');
+  if (fs.existsSync(slEngineSrc)) {
+    copyDirRecursive(slEngineSrc, slEngineDest);
+    success(`${B}Statusline v2${R} engine installed (5 themes, 3 layouts)`);
+  } else {
     success(`${B}Statusline${R} installed to ~/.claude/`);
+  }
+
+  // Write default config if none exists
+  const configPath = path.join(claudeDir, 'statusline-config.json');
+  if (!fs.existsSync(configPath)) {
+    const defaultConfig = { version: 2, theme: 'default', layout: 'standard', options: {} };
+    fs.writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2) + '\n');
   }
 
   // Merge into ~/.claude/settings.json
@@ -253,7 +269,7 @@ function initGlobal() {
   log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-pr${R}       ${D}Prepare PR with blast radius${R}`);
   blank();
   bar(`${R}${D}Installed to:${R}  ${CYN}~/.claude/skills/${R}  ${D}(global)${R}`);
-  bar(`${R}${D}Statusline:${R}    ${CYN}~/.claude/statusline-command.sh${R}`);
+  bar(`${R}${D}Statusline:${R}    ${CYN}~/.claude/statusline/${R}  ${D}(v2 engine)${R}`);
   bar(`${R}${D}MCP config:${R}    ${CYN}.mcp.json${R}  ${D}(this project)${R}`);
   blank();
   bar(`Docs     ${R}${TEAL}https://skills.thinqmesh.com${R}`);
@@ -300,7 +316,7 @@ function initProject() {
   log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-fix${R}      ${D}Debug with root-cause analysis${R}`);
   blank();
   bar(`${R}${D}Installed to:${R}  ${CYN}.claude/skills/${R}  ${D}(this project)${R}`);
-  bar(`${R}${D}Statusline:${R}    ${CYN}~/.claude/statusline-command.sh${R}  ${D}(global)${R}`);
+  bar(`${R}${D}Statusline:${R}    ${CYN}~/.claude/statusline/${R}  ${D}(v2 engine, global)${R}`);
   bar(`${R}${D}MCP config:${R}    ${CYN}.mcp.json${R}  ${D}(this project)${R}`);
   blank();
   bar(`Docs     ${R}${TEAL}https://skills.thinqmesh.com${R}`);

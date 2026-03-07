@@ -12,7 +12,7 @@ const isProjectOnly = flags.includes('--project') || flags.includes('-p');
 const PKG_DIR = path.resolve(__dirname, '..');
 const CWD = process.cwd();
 const HOME = os.homedir();
-const VERSION = '1.1.2';
+const VERSION = '2.0.0';
 
 // Terminal colors
 const R = '\x1b[0m';
@@ -156,6 +156,22 @@ function installSkillsAndResources(targetBase) {
   success(`${B}9 templates${R} installed`);
   copyDirRecursive(path.join(PKG_DIR, 'references'), path.join(sharedDir, 'references'));
   success(`${B}15 reference docs${R} installed`);
+
+  // Install CCS v2 engine (compiled TypeScript)
+  const distSrc = path.join(PKG_DIR, 'dist');
+  if (fs.existsSync(distSrc)) {
+    const engineDest = path.join(sharedDir, 'engine');
+    copyDirRecursive(distSrc, engineDest);
+    success(`${B}CCS Engine v2${R} installed (programming-first context)`);
+  }
+
+  // Install hooks (cross-platform Node.js scripts)
+  const hooksSrc = path.join(PKG_DIR, 'hooks');
+  if (fs.existsSync(hooksSrc)) {
+    const hooksDest = path.join(sharedDir, 'hooks');
+    copyDirRecursive(hooksSrc, hooksDest);
+    success(`${B}Hooks${R} installed (context injection, auto-indexing)`);
+  }
 }
 
 function installStatusline() {
@@ -265,18 +281,24 @@ function initGlobal() {
   blank();
   log(`  ${GRAY}\u251C${''.padEnd(58, '\u2500')}\u2524${R}`);
   blank();
-  log(`  ${GRAY}\u2502${R}   ${GRN}${B}Ready.${R} Open Claude Code in ${B}any project${R} and run:`);
+  log(`  ${GRAY}\u2502${R}   ${GRN}${B}Ready.${R} ${B}v2 Engine${R} — programming-first context.`);
   blank();
-  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-init${R}     ${D}Index your codebase${R}`);
-  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-plan${R}     ${D}Plan a task${R}`);
-  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-build${R}    ${D}Build with context${R}`);
-  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-fix${R}      ${D}Debug with root-cause analysis${R}`);
-  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-branch${R}   ${D}Create/switch branches with context${R}`);
-  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-pr${R}       ${D}Prepare PR with blast radius${R}`);
+  log(`  ${GRAY}\u2502${R}   ${D}Terminal commands (zero AI tokens):${R}`);
+  log(`  ${GRAY}\u2502${R}      ${CYN}${B}ccs index${R}         ${D}Build the codebase index${R}`);
+  log(`  ${GRAY}\u2502${R}      ${CYN}${B}ccs search${R} ${D}<q>${R}    ${D}Search files & symbols${R}`);
+  log(`  ${GRAY}\u2502${R}      ${CYN}${B}ccs context${R} ${D}<q>${R}   ${D}Build precise context blob${R}`);
+  log(`  ${GRAY}\u2502${R}      ${CYN}${B}ccs watch${R}         ${D}Auto-update on file changes${R}`);
   blank();
-  bar(`${R}${D}Installed to:${R}  ${CYN}~/.claude/skills/${R}  ${D}(global)${R}`);
-  bar(`${R}${D}Statusline:${R}    ${CYN}~/.claude/statusline/${R}  ${D}(v2 engine)${R}`);
-  bar(`${R}${D}MCP config:${R}    ${CYN}.mcp.json${R}  ${D}(this project)${R}`);
+  log(`  ${GRAY}\u2502${R}   ${D}Slash commands (in Claude Code):${R}`);
+  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-init${R}         ${D}Index + analyze codebase${R}`);
+  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-plan${R}         ${D}Plan a task with context${R}`);
+  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-build${R}        ${D}Build with minimal tokens${R}`);
+  log(`  ${GRAY}\u2502${R}      ${CYN}${B}/ccs-fix${R}          ${D}Debug with root-cause analysis${R}`);
+  blank();
+  bar(`${R}${D}Engine:${R}      ${CYN}~/.claude/skills/_ccs/engine/${R}  ${D}(v2)${R}`);
+  bar(`${R}${D}Skills:${R}      ${CYN}~/.claude/skills/${R}  ${D}(global)${R}`);
+  bar(`${R}${D}Statusline:${R}  ${CYN}~/.claude/statusline/${R}  ${D}(v2)${R}`);
+  bar(`${R}${D}MCP config:${R}  ${CYN}.mcp.json${R}  ${D}(this project)${R}`);
   blank();
   bar(`Docs     ${R}${TEAL}https://skills.thinqmesh.com${R}`);
   bar(`GitHub   ${R}${PURPLE}https://github.com/AnitChaudhry/codebase-context-skill${R}`);

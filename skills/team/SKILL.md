@@ -113,4 +113,4 @@ Mark all tasks as done in `.ccs/team-board.md`. Add integration log entry.
 - Strategy: `.claude/skills/_ccs/references/context-strategies.md`
 
 ---
-*codebase-context-skill v1.0.8*
+*codebase-context-skill v2.0.0*

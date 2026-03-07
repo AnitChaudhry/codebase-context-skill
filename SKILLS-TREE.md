@@ -1,4 +1,4 @@
-# Codebase Context Skill — Skills Tree v1.0.8
+# Codebase Context Skill — Skills Tree v2.0.0
 
 > **For agents**: Read this file first. Match your task to a skill below, then read only `skills/<name>/SKILL.md` for full instructions. Do not read all skills — pick only what you need.
 
@@ -112,4 +112,4 @@ research, track, connect → independent (no init dependency)
 - **Model tiering**: Use the model column to route to appropriate compute tier
 
 ---
-*Thinqmesh Technologies — codebase-context-skill v1.0.8*
+*Thinqmesh Technologies — codebase-context-skill v2.0.0*

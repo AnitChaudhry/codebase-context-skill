@@ -70,4 +70,4 @@ git diff <branch1>...<branch2> -- <file>   # File-specific diff
 ```
 
 ---
-*Built by [Anit Chaudhary](https://github.com/AnitChaudhry) — codebase-context-skill v1.0.0*
+*Built by [Anit Chaudhary](https://github.com/AnitChaudhry) — codebase-context-skill v2.0.0*

@@ -187,4 +187,4 @@ Set your preference on first init (saved in `.ccs/preferences.json`):
 MIT
 
 ---
-*Built by [Anit Chaudhary](https://github.com/AnitChaudhry) — codebase-context-skill v1.0.8*
+*Built by [Anit Chaudhary](https://github.com/AnitChaudhry) — codebase-context-skill v2.0.0*

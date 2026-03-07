@@ -98,4 +98,4 @@ Do your work, then report what you changed and any issues found.
 - **Bash** — Run commands (build, test, lint)
 
 ---
-*Built by [Thinqmesh Technologies](https://thinqmesh.com) — codebase-context-skill v1.0.8*
+*Built by [Thinqmesh Technologies](https://thinqmesh.com) — codebase-context-skill v2.0.0*

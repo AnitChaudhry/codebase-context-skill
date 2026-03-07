@@ -1,4 +1,4 @@
-# Codebase Context Skill — Agents Index v1.0.8
+# Codebase Context Skill — Agents Index v2.0.0
 
 > **For orchestrators**: Quick reference for all available agents. Read `agents/<name>.md` for full instructions.
 
@@ -92,4 +92,4 @@ agents = {
 ```
 
 ---
-*Thinqmesh Technologies — codebase-context-skill v1.0.8*
+*Thinqmesh Technologies — codebase-context-skill v2.0.0*

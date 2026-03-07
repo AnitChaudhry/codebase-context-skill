@@ -83,4 +83,4 @@ All operations use local git commands only:
 - `/ccs-plan` can read branch refs to understand work-in-progress across branches
 
 ---
-*Built by [Anit Chaudhary](https://github.com/AnitChaudhry) — codebase-context-skill v1.0.0*
+*Built by [Anit Chaudhary](https://github.com/AnitChaudhry) — codebase-context-skill v2.0.0*

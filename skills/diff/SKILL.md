@@ -65,4 +65,4 @@ Append using template at `.claude/skills/_ccs/templates/task-template.md`: branc
 - Task template: `.claude/skills/_ccs/templates/task-template.md`
 
 ---
-*codebase-context-skill v1.0.0*
+*codebase-context-skill v2.0.0*

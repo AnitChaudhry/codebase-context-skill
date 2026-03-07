@@ -1,86 +1,50 @@
 ---
 name: init
-description: "Deep-research the codebase and generate .ccs/ context files"
+description: "Index the codebase using the CCS engine — builds dependency graph, symbol index, and project summary in milliseconds"
 category: context
 tags: [index, scan, setup, architecture]
 depends-on: []
 input: "codebase root directory"
-output: ".ccs/ project-map, architecture, file-index, conventions"
-token-estimate: 8000
+output: ".ccs/index.json — full codebase index with symbols, graph, conventions"
+token-estimate: 500
 parallel-safe: false
 argument-hint: "[--rebuild]"
 user-invocable: true
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, AskUserQuestion, Task, EnterPlanMode
-model: claude-opus-4-6
-context: fork
+allowed-tools: Read, Bash, AskUserQuestion
+model: claude-sonnet-4-6
+context: inline
 agent: general-purpose
 ---
 
-# Init
+# Init — Engine-Powered Indexing
 
-Deep-analyze the codebase and generate all context files in `.ccs/`.
+Index the codebase using the CCS TypeScript engine. Zero AI exploration — the engine does all the work programmatically.
 
-## Steps
+## Engine Output (injected automatically)
 
-### 1. Check existing context
-Glob for `.ccs/*`. If exists, ask user: rebuild or incremental? If incremental, delegate to `/ccs-refresh`.
+!`ccs index 2>&1 || npx codebase-context-skill index 2>&1 || echo "CCS engine not found. Run: npm install -g codebase-context-skill"`
 
-### 2. Ask preferences (first run only)
-If `.ccs/preferences.json` missing, ask refresh mode (on-demand / incremental / session-based). Save to `.ccs/preferences.json`.
+## After Indexing
 
-### 3. Discovery
-- Glob `**/*` excluding `node_modules/`, `dist/`, `build/`, `.next/`, `__pycache__/`, `.git/`, `coverage/`, `.cache/`, `*.lock`, `*.min.*`, `.ccs/`
-- Count files by extension and directories
-- Read package manager files: `package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`, `pom.xml`, `Gemfile`, `requirements.txt`
-- Read config files: `tsconfig.json`, `.eslintrc*`, `.prettierrc*`, `jest.config*`, `vitest.config*`, `webpack.config*`, `vite.config*`, `next.config*`
+!`ccs summary 2>/dev/null`
 
-### 4. Structural analysis
-For each source file (JS, TS, JSX, TSX, PY, GO, RS, JAVA, RB, PHP):
-- Read first 50 lines for imports/exports
-- Classify role: entry-point, component, page, util, helper, config, test, type, style, middleware, service, controller, model, hook, context, store, api, schema
-- Record import/export relationships
+## What to Tell the User
 
-### 5. Dependency graph
-- Build `file -> [imports]` and `file -> [imported-by]` maps
-- Rank by import count: S (10+), A (5-9), B (2-4), C (1), D (0)
+Report the engine output above. The index is now at `.ccs/index.json`. Explain:
+- **Files indexed**, total lines, directories, tech stack
+- **Key files** (S/A rank) — these are the most-imported, most-central files
+- **Architecture** detected and conventions found
+- **Next steps**: Just start working. The engine automatically:
+  - Injects relevant context on every query (UserPromptSubmit hook)
+  - Updates the index when files change (PostToolUse hook)
+  - Provides project summary at session start (SessionStart hook)
 
-### 6. Pattern recognition
-- Detect architecture pattern from directory structure
-- Detect naming conventions (sample 10 files, 10 variables)
-- Detect test patterns, import/export style, error handling patterns
-
-### 7. Generate context files
-Using templates at `.claude/skills/_ccs/templates/`:
-- `.ccs/project-map.md` — file tree + dependency graph
-- `.ccs/architecture.md` — tech stack, patterns, data flow
-- `.ccs/file-index.md` — ranked file index with symbols
-- `.ccs/conventions.md` — all detected patterns
-- `.ccs/task.md` — empty task log (session header only)
-- `.ccs/preferences.json` — user preferences
-
-### 8. Configure MCP server
-1. Check if `.mcp.json` exists in project root
-2. If `ccs` entry already exists under `mcpServers` → skip
-3. If `.mcp.json` exists but no `ccs` entry → merge into existing:
-   ```json
-   { "mcpServers": { ...existing, "ccs": { "type": "http", "url": "https://skills.thinqmesh.com/api/mcp" } } }
-   ```
-4. If `.mcp.json` missing → create with just the `ccs` entry
-5. **NEVER overwrite or remove existing MCP server entries**
-
-### 9. Report
-Output summary: files indexed, directories, tech stack, architecture, S/A-rank counts, test files, MCP status, refresh mode.
-
-## Rules
-- Read file headers (first 50 lines) not full files during indexing
-- Skip binary files, images, fonts, lock files, minified files
-- Total context files should be under 3000 lines combined
-- Use Glob results to decide what to read — never read blindly
-
-## Refs
-- Templates: `.claude/skills/_ccs/templates/`
-- Strategy: `.claude/skills/_ccs/references/context-strategies.md`
-- Task log: `.ccs/task.md`
+Available commands:
+- `ccs search <query>` — search files and symbols (instant, zero tokens)
+- `ccs context <query>` — build precise context blob
+- `ccs graph <file>` — show dependency graph for a file
+- `ccs stats` — index statistics
+- `ccs watch` — auto-update index on file changes
 
 ---
-*codebase-context-skill v1.0.0*
+*codebase-context-skill v2.0.0*

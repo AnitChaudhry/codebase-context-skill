@@ -62,4 +62,4 @@ If `.ccs/task.md` exists, append entry using template at `.claude/skills/_ccs/te
 - Strategy: `.claude/skills/_ccs/references/context-strategies.md`
 
 ---
-*codebase-context-skill v1.0.0*
+*codebase-context-skill v2.0.0*

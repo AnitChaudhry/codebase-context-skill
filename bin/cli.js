@@ -237,6 +237,92 @@ function installMcp(targetDir) {
   }
 }
 
+function installHooks(targetBase) {
+  const settingsPath = path.join(HOME, '.claude', 'settings.json');
+  let settings = {};
+  if (fs.existsSync(settingsPath)) {
+    try { settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8')); } catch (e) {}
+  }
+
+  const hooksDir = path.join(targetBase, 'skills', '_ccs', 'hooks', 'scripts');
+  const isWin = process.platform === 'win32';
+  const gitBash = 'C:\\Program Files\\Git\\usr\\bin\\bash.exe';
+
+  function nodeCmd(script) {
+    return 'node "' + path.join(hooksDir, script) + '"';
+  }
+  function bashCmd(script) {
+    const absPath = path.join(hooksDir, script);
+    if (isWin) {
+      return '"' + gitBash + '" "' + absPath.replace(/\\/g, '/') + '"';
+    }
+    return 'bash "' + absPath + '"';
+  }
+
+  const ccsHooks = {
+    SessionStart: [{
+      hooks: [
+        { type: 'command', command: nodeCmd('session-summary.js'), timeout: 10 },
+        { type: 'command', command: nodeCmd('session-orient.js'), timeout: 10 }
+      ]
+    }],
+    UserPromptSubmit: [{
+      hooks: [
+        { type: 'command', command: nodeCmd('context-inject.js'), timeout: 10 }
+      ]
+    }],
+    PreToolUse: ['Write', 'Edit', 'MultiEdit', 'Bash'].map(function(matcher) {
+      return {
+        matcher: matcher,
+        hooks: [
+          { type: 'command', command: nodeCmd('path-guard.js'), timeout: 5 }
+        ]
+      };
+    }),
+    PostToolUse: [
+      {
+        matcher: 'Write',
+        hooks: [
+          { type: 'command', command: nodeCmd('write-validate.js'), timeout: 5 },
+          { type: 'command', command: nodeCmd('index-update.js'), timeout: 10 },
+          { type: 'command', command: nodeCmd('auto-commit.js'), timeout: 5 }
+        ]
+      },
+      {
+        matcher: 'Edit',
+        hooks: [
+          { type: 'command', command: nodeCmd('index-update.js'), timeout: 10 }
+        ]
+      }
+    ],
+    Stop: [{
+      hooks: [
+        { type: 'command', command: nodeCmd('session-capture.js'), timeout: 15 }
+      ]
+    }]
+  };
+
+  // Merge: remove old CCS hook entries (command contains '_ccs'), then add new
+  if (!settings.hooks) settings.hooks = {};
+
+  for (const [event, entries] of Object.entries(ccsHooks)) {
+    if (!settings.hooks[event]) {
+      settings.hooks[event] = entries;
+    } else {
+      // Remove existing CCS entries
+      settings.hooks[event] = settings.hooks[event].filter(function(entry) {
+        var cmds = (entry.hooks || []).map(function(h) { return h.command || ''; });
+        return !cmds.some(function(c) { return c.includes('_ccs'); });
+      });
+      // Append new CCS entries
+      settings.hooks[event] = settings.hooks[event].concat(entries);
+    }
+  }
+
+  fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2) + '\n');
+  success(`${B}Hooks${R} registered in ~/.claude/settings.json`);
+}
+
 function updateGitignore() {
   const gitignorePath = path.join(CWD, '.gitignore');
   if (!fs.existsSync(gitignorePath)) return;
@@ -268,6 +354,9 @@ function initGlobal() {
   // Install skills + resources to ~/.claude/
   const globalClaudeDir = path.join(HOME, '.claude');
   installSkillsAndResources(globalClaudeDir);
+
+  // Register hooks in ~/.claude/settings.json
+  installHooks(globalClaudeDir);
 
   // Statusline (always global — ~/.claude/)
   installStatusline();
@@ -323,6 +412,9 @@ function initProject() {
   // Install skills + resources to ./.claude/
   const projectClaudeDir = path.join(CWD, '.claude');
   installSkillsAndResources(projectClaudeDir);
+
+  // Register hooks in ~/.claude/settings.json (hooks are always global)
+  installHooks(projectClaudeDir);
 
   // Statusline always goes to ~/.claude/ (it's a global Claude Code setting)
   installStatusline();

@@ -1,6 +1,6 @@
 {
   "name": "codebase-context-skill",
-  "version": "2.0.0",
+  "version": "2.0.2",
   "description": "Programming-first context engine for Claude Code — TypeScript-powered codebase indexing, dependency graphing, symbol-level search, and zero-token context injection via hooks.",
   "bin": {
     "codebase-context-skill": "bin/cli.js",
@@ -11,7 +11,7 @@
     "build": "tsc",
     "build:watch": "tsc --watch",
     "prepublishOnly": "npm run build",
-    "postinstall": "node bin/cli.js init 2>/dev/null || true"
+    "postinstall": "node bin/cli.js init || echo \"[ccs] Post-install setup incomplete. Run: ccs init\""
   },
   "files": [
     "bin/",

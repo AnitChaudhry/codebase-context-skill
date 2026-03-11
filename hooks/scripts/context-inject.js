@@ -58,22 +58,21 @@ process.stdin.on('end', () => {
 });
 
 function findEngine() {
+  const home = process.env.HOME || process.env.USERPROFILE || '';
   // Check common locations for the compiled CCS CLI
   const candidates = [
+    // Installed location (npm install -g → bin/cli.js copies engine here)
+    path.join(home, '.claude', 'skills', '_ccs', 'engine', 'cli.js'),
+    // Project-local install (init --project)
+    path.join(process.cwd(), '.claude', 'skills', '_ccs', 'engine', 'cli.js'),
+    // Relative to hooks dir (installed layout: _ccs/hooks/scripts/ → _ccs/engine/)
+    path.join(__dirname, '..', '..', 'engine', 'cli.js'),
+    // Source repo (dist/ exists alongside hooks/)
     path.join(__dirname, '..', '..', 'dist', 'cli.js'),
-    path.join(__dirname, '..', '..', 'node_modules', '.bin', 'ccs'),
-    path.join(process.cwd(), 'node_modules', '.bin', 'ccs'),
+    // Project node_modules
+    path.join(process.cwd(), 'node_modules', 'codebase-context-skill', 'dist', 'cli.js'),
     path.join(process.cwd(), 'dist', 'cli.js'),
   ];
-
-  // Also check global install
-  try {
-    const globalPrefix = execFileSync(process.execPath, ['-e', 'console.log(require("path").dirname(process.execPath))'], {
-      encoding: 'utf8',
-      timeout: 3000,
-    }).trim();
-    candidates.push(path.join(globalPrefix, 'node_modules', 'codebase-context-skill', 'dist', 'cli.js'));
-  } catch {}
 
   for (const candidate of candidates) {
     if (fs.existsSync(candidate)) return candidate;

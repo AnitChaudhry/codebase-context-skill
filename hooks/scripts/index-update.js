@@ -48,9 +48,13 @@ process.stdin.on('end', () => {
 });
 
 function findEngine() {
+  const home = process.env.HOME || process.env.USERPROFILE || '';
   const candidates = [
+    path.join(home, '.claude', 'skills', '_ccs', 'engine', 'cli.js'),
+    path.join(process.cwd(), '.claude', 'skills', '_ccs', 'engine', 'cli.js'),
+    path.join(__dirname, '..', '..', 'engine', 'cli.js'),
     path.join(__dirname, '..', '..', 'dist', 'cli.js'),
-    path.join(process.cwd(), 'node_modules', '.bin', 'ccs'),
+    path.join(process.cwd(), 'node_modules', 'codebase-context-skill', 'dist', 'cli.js'),
     path.join(process.cwd(), 'dist', 'cli.js'),
   ];
   for (const c of candidates) {

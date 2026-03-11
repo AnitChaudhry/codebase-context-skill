@@ -22,11 +22,11 @@ Index the codebase using the CCS TypeScript engine. Zero AI exploration — the 
 
 ## Engine Output (injected automatically)
 
-!`ccs index 2>&1 || npx codebase-context-skill index 2>&1 || echo "CCS engine not found. Run: npm install -g codebase-context-skill"`
+!`ccs index 2>&1 || node "$HOME/.claude/skills/_ccs/engine/cli.js" index 2>&1 || npx codebase-context-skill index 2>&1 || echo "CCS engine not found. Run: npm install -g codebase-context-skill"`
 
 ## After Indexing
 
-!`ccs summary 2>/dev/null`
+!`ccs summary 2>/dev/null || node "$HOME/.claude/skills/_ccs/engine/cli.js" summary 2>/dev/null`
 
 ## What to Tell the User
 

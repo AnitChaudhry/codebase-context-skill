@@ -28,3 +28,5 @@ Thumbs.db
 
 # Crash dumps
 *.stackdump
+# MCP config contains auth token
+.mcp.json
